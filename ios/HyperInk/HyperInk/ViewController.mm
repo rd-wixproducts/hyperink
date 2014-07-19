@@ -10,6 +10,7 @@
 
 #ifdef __cplusplus
 #import <opencv2/imgproc/imgproc.hpp>
+#import "Vision.hh"
 #endif
 
 using namespace cv;
@@ -65,7 +66,7 @@ using namespace cv;
 #ifdef __cplusplus
 - (void)processImage:(Mat&)image;
 {
-    // do image processing
+    Vision::processImage(image);
 }
 #endif
 
