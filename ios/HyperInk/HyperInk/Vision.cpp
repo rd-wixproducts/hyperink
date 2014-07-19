@@ -19,14 +19,19 @@ using namespace std;
 using namespace cv;
     
 #define CANNY_THRESH (100)
-#define POLY_APPROX_MULT (0.05)
+#define POLY_APPROX_MULT (0.025)
+#define BILATERAL_DIAM (5)
+#define BILATERAL_SIGMACOLOR (50)
+#define BILATERAL_SIGMASPACE (50)
 
 RNG rng(12345);
 void processImage(cv::Mat& image)
 {
-    static Mat dest;
-    cvtColor(image, dest, CV_BGR2GRAY);
-    blur(dest, dest, Size(3, 3));
+    static Mat dest(image.rows, image.cols, CV_8UC1);
+    cvtColor(image, image, CV_BGR2GRAY);
+    // blur(image, dest, Size(3, 3));
+    // cvtColor(image, image, CV_BGRA2BGR);
+    bilateralFilter(image, dest, BILATERAL_DIAM, BILATERAL_SIGMACOLOR, BILATERAL_SIGMASPACE);
     static Mat canny_output;
     vector<vector<Point>> contours;
     vector<Vec4i> hierarchy;
@@ -51,7 +56,7 @@ void processImage(cv::Mat& image)
         if (poly.size() >= 4) {
             if (isContourConvex(poly)) {
                 for (int j = 0; j < poly.size(); j++) {
-                    circle(image, poly[j], 10, color_green, CV_FILLED);
+                    circle(image, poly[j], 10, Scalar(255), CV_FILLED);
                 }
             }
         }
