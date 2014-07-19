@@ -1,0 +1,17 @@
+{
+  "author": "AthaBudKwEfley",
+  "name": "hyperink",
+  "description": "#YOLO",
+  "version": "0.0.1",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/anishathalye/hyperink.git"
+  },
+  "engines": {
+    "node": ">=0.4.0"
+  },
+  "dependencies": {
+    "express": "4.6.x",
+    "binaryjs": "0.2.x"
+  }
+}
