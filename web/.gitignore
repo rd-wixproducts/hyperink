@@ -1,0 +1,5 @@
+# Meteor
+# -- taken from https://github.com/github/gitignore
+#
+.meteor/local
+.meteor/meteorite
