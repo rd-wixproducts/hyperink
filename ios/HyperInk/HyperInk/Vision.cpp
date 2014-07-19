@@ -17,18 +17,43 @@ namespace Vision
     
     using namespace std;
     using namespace cv;
-    
+
 #define CANNY_THRESH (100)
-#define POLY_APPROX_MULT (0.025)
+#define POLY_APPROX_MULT (0.01)
 #define BILATERAL_DIAM (5)
 #define BILATERAL_SIGMACOLOR (50)
 #define BILATERAL_SIGMASPACE (50)
-    
+#define POLY_SIZE_LOW (0.1)
+#define POLY_SIZE_HIGH (0.95)
+
     static Scalar color_red = Scalar(0, 0, 255, 255);
     static Scalar color_blue = Scalar(255, 0, 0, 255);
     static Scalar color_green = Scalar(0, 255, 0, 255);
 
-    void processImage(cv::Mat& image)
+    std::vector<Point> findRect(cv::Mat &image);
+    
+    void drawRect(cv::Mat &image, std::vector<Point> rect);
+    
+    bool isRightRect(const cv::Mat &image, const std::vector<Point> &rect, double area);
+    
+    void processImage(cv::Mat &image)
+    {
+        vector<Point> rect = findRect(image);
+        drawRect(image, rect);
+    }
+    
+    void drawRect(cv::Mat &image, std::vector<Point> rect)
+    {
+        if (!rect.empty()) {
+            vector<vector<Point>> tmp(1, rect);
+            drawContours(image, tmp, 0, color_red, 3, 8);
+            for (int j = 0; j < rect.size(); j++) {
+                circle(image, rect[j], 10, color_green, CV_FILLED);
+            }
+        }
+    }
+    
+    std::vector<Point> findRect(cv::Mat &image)
     {
         // image dimensions must never change between calls
         // because of statically allocated data structures
@@ -43,7 +68,6 @@ namespace Vision
         vector<vector<Point>> contours;
         findContours(canny_output, contours, CV_RETR_LIST, CV_CHAIN_APPROX_SIMPLE);
         
-        // Draw contours
         static Mat hull;
         vector<Point> rect;
         for (const auto &contour : contours) {
@@ -52,22 +76,23 @@ namespace Vision
             vector<Point> poly;
             double len = arcLength(hull, true);
             approxPolyDP(hull, poly, len * POLY_APPROX_MULT, true);
-            if (poly.size() >= 4 && isContourConvex(poly)) {
-                // double area = contourArea(poly);
-                // filter based on area?
-                if (rect.size() == 0 || len > arcLength(rect, true)) {
-                    rect = poly;
+            if (poly.size() == 4 && isContourConvex(poly)) {
+                double area = contourArea(poly);
+                if (isRightRect(image, rect, area)) {
+                    if (rect.size() == 0 || len > arcLength(rect, true)) {
+                        rect = poly;
+                    }
                 }
             }
         }
-        
-        if (!rect.empty()) {
-            vector<vector<Point>> tmp(1, rect);
-            drawContours(image, tmp, 0, color_blue, 3, 8);
-            for (int j = 0; j < rect.size(); j++) {
-                circle(image, rect[j], 10, color_green, CV_FILLED);
-            }
-        }
+
+        return rect;
+    }
+
+    bool isRightRect(const cv::Mat &image, const std::vector<Point> &rect, double area)
+    {
+        const double image_size = image.rows * image.cols;
+        return POLY_SIZE_LOW * image_size <= area && area <= image_size * POLY_SIZE_HIGH;
     }
     
 }
