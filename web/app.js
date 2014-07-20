@@ -105,6 +105,8 @@ app.controller('paperCtrl', function($scope, $firebase) {
         var key = $scope.tempKey;
         $scope.comments.$remove(key);
     }
+    $scope.tempComment = null;
+    $scope.commentText = '';
     $scope.makingComment = false;
     $scope.showMousedCmt = false;
   };
