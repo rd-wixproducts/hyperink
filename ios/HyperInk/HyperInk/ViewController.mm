@@ -66,7 +66,8 @@ using namespace cv;
 #ifdef __cplusplus
 - (void)processImage:(Mat&)image;
 {
-    Vision::processImage(image);
+    static Mat dest;
+    bool success = Vision::processImage(image, dest);
 }
 #endif
 

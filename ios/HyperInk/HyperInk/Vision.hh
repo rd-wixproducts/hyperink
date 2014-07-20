@@ -15,7 +15,7 @@
 namespace Vision
 {
     
-    void processImage(cv::Mat &image);
+    bool processImage(cv::Mat &image, cv::Mat &transImage);
     
 }
 
