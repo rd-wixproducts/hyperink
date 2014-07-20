@@ -29,8 +29,8 @@ namespace Vision
 #define POLY_SIZE_HIGH (0.95)
 #define ASPECT_RATIO (8.5 / 11.0)
 #define TARGET_WIDTH (1000)
-#define DIST_REQUIREMENT (200.0)
-#define MATCH_REQUIREMENT 2
+#define DIST_REQUIREMENT (7500.0)
+#define MATCH_REQUIREMENT 4
 
     static Scalar color_red = Scalar(0, 0, 255, 255);
     static Scalar color_blue = Scalar(255, 0, 0, 255);
@@ -48,7 +48,7 @@ namespace Vision
     
     vector<Point2f> sortRect(const std::vector<Point> &rect);
     
-    double sumSquareDistances(const vector<Point2f> &first, const vector<Point2f> &second);
+    double maxSquareDistances(const vector<Point2f> &first, const vector<Point2f> &second);
     
     bool processImage(cv::Mat &image, cv::Mat &transImage)
     {
@@ -108,15 +108,15 @@ namespace Vision
         return updateRect(rect);
     }
     
-    double sumSquareDistances(const vector<Point2f> &first, const vector<Point2f> &second)
+    double maxSquareDistances(const vector<Point2f> &first, const vector<Point2f> &second)
     {
-        double sum = 0;
+        double max = 0;
         for (int i = 0; i < first.size() && i < second.size(); i++) {
             double dx = first[i].x - second[i].x;
             double dy = first[i].y - second[i].y;
-            sum += dx * dx + dy * dy;
+            max = std::max(max, dx * dx + dy * dy);
         }
-        return sum;
+        return max;
     }
     
     std::vector<Point> updateRect(const std::vector<Point> &rect)
@@ -129,7 +129,7 @@ namespace Vision
         
         vector<Point2f> sorted = sortRect(rect);
         if (!old.empty()) {
-            double dist = sumSquareDistances(old, sorted);
+            double dist = maxSquareDistances(old, sorted);
             if (dist < DIST_REQUIREMENT) {
                 old = sorted;
                 matches++;
@@ -145,7 +145,7 @@ namespace Vision
             oldPoints = rect;
             return rect;
         } else {
-            return oldPoints;
+            return vector<Point>();
         }
     }
 
