@@ -25,6 +25,7 @@
       <svg id="hyperspace">
         <path data-ng-repeat="cmt in comments"
               style="background-color: purple;
+                     fill: purple;
                      opacity: .3;"
               d="{{cmt.d}}" data-ng-class="{done: cmt.done}"
               data-ng-mouseover="showComment(cmt)"></path>
