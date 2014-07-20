@@ -86,7 +86,7 @@ function fucking_change_dat_shit(value){
 	for(var x = 0; x < mini_width; x++){
 		for(var y = 0; y < mini_height; y++){
 			if(edit_times[y * mini_width + x] > value){
-				console.log(x, y)
+				// console.log(x, y)
 				ctx.fillRect(x * 10, y * 10, 10, 10)
 			}
 		}
