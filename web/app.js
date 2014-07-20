@@ -2,13 +2,14 @@ var app = angular.module('hyperink', []);
 
 app.controller('paperCtrl', function($scope) {
   $scope.comments = [];
-  $scope.makingComment = false;
+  $scope.makingComment = undefined;
   $scope.tempComment = {};
   $scope.mousedCmt = {};
   $scope.showMousedCmt = false;
   $scope.curve = undefined;
 
 
+  /*
   $scope.createComment = function($event) {
     $scope.makingComment = false;
 
@@ -21,6 +22,7 @@ app.controller('paperCtrl', function($scope) {
     $scope.makingComment = true;
 
   };
+  */
 
   $scope.hideCommentButton = function() {
     return $scope.commentText === '' || $scope.commentText === undefined;
@@ -36,11 +38,8 @@ app.controller('paperCtrl', function($scope) {
   };
 
   $scope.submitComment = function() {
-    $scope.tempComment.text = $scope.commentText;
-    $scope.comments.push($scope.tempComment);
-    $scope.tempComment = {};
-    $scope.commentText = '';
-    $scope.makingComment = false;
+    $scope.comments[$scope.comments.length - 1].text = $scope.commentText;
+    $scope.closeCommentDialog();
   };
 
   $scope.closeCommentDialog = function() {
@@ -59,27 +58,45 @@ app.controller('paperCtrl', function($scope) {
     $scope.showMousedCmt = false;
   };
 
-  $scope.cmtStyle = function(x, y) {
-    var nX = x + paper.offsetLeft;
-    return {'left': nX + 'px', 'top': y + 'px'};
+  $scope.cmtStyle = function(cmt) {
+    if(cmt === undefined) {
+      return {};
+    }
+    var x = cmt.x + paper.offsetLeft;
+    var y = cmt.y;
+    return {'left': x + 'px', 'top': y + 'px'};
   };
 
-  onmousedown = function($event){
+  onmousedown = function($event) {
     $scope.curve = document.createElementNS('http://www.w3.org/2000/svg','path');
     $scope.curve.setAttribute('d', 'M'+ ($event.pageX - document.getElementById('paper').offsetLeft) +' '+($event.pageY- document.getElementById('paper').offsetTop))
-    $scope.curve.setAttribute('stroke', 'rgba(100, 140, 255, 0.8)')
-    $scope.curve.setAttribute('fill', 'rgba(250, 200, 200, 0)');
-    document.getElementById('hyperspace').appendChild($scope.curve)
-  }
+    $scope.curve.setAttribute('stroke', 'rgba(125, 0, 125, 0.8)');
+    $scope.curve.setAttribute('fill', 'rgba(0, 0, 0, 0)');
+    document.getElementById('hyperspace').appendChild($scope.curve);
+  };
 
-  onmouseup = function(){
-    $scope.curve.setAttribute('fill', 'rgba(250, 200, 200, 0.2)');
-    $scope.curve.setAttribute('stroke', 'rgba(100, 140, 255, 0)')
-    $scope.curve = undefined;
-  }
+  onmouseup = function() {
+    $scope.curve.setAttribute('fill', 'rgba(125, 0, 125, 0.2)');
+    $scope.curve.setAttribute('stroke', 'rgba(0, 0, 0, 0)');
+    $scope.tempComment = {
+      curve: $scope.curve,
+      x: $scope.curve.getBBox().x,
+      y: $scope.curve.getBBox().y,
+      w: $scope.curve.getBBox().width,
+      h: $scope.curve.getBBox().height,
+      d: $scope.curve.getAttribute('d'),
+      text: ''
+    };
+    $scope.makingComment = true;
+    if($scope.tempComment.x > 10 && $scope.tempComment.y > 10) {
+      $scope.comments.push($scope.tempComment);
+    }
+    $scope.curve.parentNode.removeChild($scope.curve);
+    $scope.curve = null;
+  };
 
   onmousemove = function($event){
-    console.log($event, $scope.curve)
+    //console.log($event, $scope.curve)
     if($scope.curve)
       $scope.curve.setAttribute('d', $scope.curve.getAttribute('d') + 'L'+($event.pageX - document.getElementById('paper').offsetLeft)+' '+($event.pageY- document.getElementById('paper').offsetTop));
   }

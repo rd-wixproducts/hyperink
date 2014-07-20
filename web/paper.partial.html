@@ -28,15 +28,16 @@
     <div id="paper" class="paper" data-ng-click="createComment($event)">
       <svg id="hyperspace"></svg>
     </div>
-    <div data-ng-repeat="cmt in comments">
-      <div data-ng-style="cmtStyle(cmt.x, cmt.y)" 
-           data-ng-mouseover="showComment(cmt)"
-           class="circle">
+    <svg>
+      <div data-ng-repeat="cmt in comments">
+        <path data-ng-attr-d="cmt.d" 
+              data-ng-mouseover="showComment(cmt)">
+        </path>
+        <div class="comment">
+        </div>
       </div>
-      <div class="comment">
-      </div>
-    </div>
-    <div data-ng-style="cmtStyle(tempComment.x, tempComment.y)"
+    </svg>
+    <div data-ng-style="cmtStyle(tempComment)"
          class="cmtDialog"
          data-ng-show="makingComment">
       <div class="cmtDialogTitle">Write Comment</div>
@@ -54,7 +55,7 @@
               data-ng-click="closeCommentDialog()">Cancel</button>
     </div>
     <div class="cmt"
-         data-ng-style="cmtStyle(mousedCmt.x, mousedCmt.y)"
+         data-ng-style="cmtStyle(mousedCmt)"
          data-ng-mouseleave="hideComment()"
          data-ng-show="showMousedCmt">
       <div>
