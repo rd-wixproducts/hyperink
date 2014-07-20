@@ -18,7 +18,7 @@
 
 using namespace cv;
 
-@interface ViewController ()
+@interface ViewController () <SRWebSocketDelegate>
 
 @property IBOutlet UIImageView *imageView;
 @property CvVideoCamera *videoCamera;
@@ -111,6 +111,28 @@ using namespace cv;
 - (NSUInteger)supportedInterfaceOrientations
 {
     return UIInterfaceOrientationMaskPortrait;
+}
+
+- (void)webSocket:(SRWebSocket *)webSocket didReceiveMessage:(id)message
+{
+    
+}
+
+- (void)webSocketDidOpen:(SRWebSocket *)webSocket
+{
+    NSLog(@"Socket opened");
+}
+
+- (void)webSocket:(SRWebSocket *)webSocket didFailWithError:(NSError *)error
+{
+    NSLog(@"Socket failed, reopening...");
+    [self initSocket];
+}
+
+- (void)webSocket:(SRWebSocket *)webSocket didCloseWithCode:(NSInteger)code reason:(NSString *)reason wasClean:(BOOL)wasClean
+{
+    NSLog(@"Socket closed, reopening...");
+    [self initSocket];
 }
 
 -(BOOL)prefersStatusBarHidden
