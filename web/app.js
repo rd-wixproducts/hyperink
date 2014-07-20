@@ -7,11 +7,12 @@ app.controller('paperCtrl', function($scope) {
   $scope.mousedCmt = {};
   $scope.showMousedCmt = false;
   $scope.curve = undefined;
+  $scope.prev_curve = undefined
 
 
   $scope.createComment = function($event) {
     $scope.makingComment = false;
-
+    
     $scope.tempComment = {
       x: $event.pageX - paper.offsetLeft,
       y: $event.pageY,
@@ -38,6 +39,7 @@ app.controller('paperCtrl', function($scope) {
   $scope.submitComment = function() {
     $scope.tempComment.text = $scope.commentText;
     $scope.comments.push($scope.tempComment);
+    
     $scope.tempComment = {};
     $scope.commentText = '';
     $scope.makingComment = false;
@@ -75,6 +77,7 @@ app.controller('paperCtrl', function($scope) {
   onmouseup = function(){
     $scope.curve.setAttribute('fill', 'rgba(250, 200, 200, 0.2)');
     $scope.curve.setAttribute('stroke', 'rgba(100, 140, 255, 0)')
+    $scope.prev_curve = $scope.curve;
     $scope.curve = undefined;
   }
 
