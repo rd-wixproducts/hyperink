@@ -167,7 +167,7 @@ namespace Vision
             oldPoints = rect;
             return rect;
         } else {
-            return oldPoints;
+            return vector<Point>();
         }
     }
 
