@@ -15,6 +15,7 @@
 		F829A2C4197A382D006BADA6 /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F829A2C3197A382D006BADA6 /* ImageIO.framework */; };
 		F8584441197A39D700D40C1C /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F8584440197A39D700D40C1C /* Accelerate.framework */; };
 		F8584443197A39E900D40C1C /* CoreImage.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F8584442197A39E900D40C1C /* CoreImage.framework */; };
+		F866CF8D197BEDA000A250AD /* hyperinksplash.png in Resources */ = {isa = PBXBuildFile; fileRef = F866CF8C197BEDA000A250AD /* hyperinksplash.png */; };
 		F8845501197AFF0B00BBCE06 /* Vision.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F88454FF197AFF0B00BBCE06 /* Vision.cpp */; };
 		F8845509197BB38C00BBCE06 /* SRWebSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = F8845508197BB38C00BBCE06 /* SRWebSocket.m */; };
 		F884550B197BB4EE00BBCE06 /* libicucore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = F884550A197BB4EE00BBCE06 /* libicucore.dylib */; };
@@ -57,6 +58,7 @@
 		F829A2C5197A3831006BADA6 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		F8584440197A39D700D40C1C /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
 		F8584442197A39E900D40C1C /* CoreImage.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreImage.framework; path = System/Library/Frameworks/CoreImage.framework; sourceTree = SDKROOT; };
+		F866CF8C197BEDA000A250AD /* hyperinksplash.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = hyperinksplash.png; sourceTree = "<group>"; };
 		F88454FF197AFF0B00BBCE06 /* Vision.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Vision.cpp; sourceTree = "<group>"; };
 		F8845500197AFF0B00BBCE06 /* Vision.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Vision.hh; sourceTree = "<group>"; };
 		F8845506197BB38C00BBCE06 /* SocketRocket-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "SocketRocket-Prefix.pch"; sourceTree = "<group>"; };
@@ -123,6 +125,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		F866CF8B197BED9900A250AD /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				F866CF8C197BEDA000A250AD /* hyperinksplash.png */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
 		F8845505197BB38C00BBCE06 /* SocketRocket */ = {
 			isa = PBXGroup;
 			children = (
@@ -136,6 +146,7 @@
 		F8D6CABA197A1DD20068EFE6 = {
 			isa = PBXGroup;
 			children = (
+				F866CF8B197BED9900A250AD /* Resources */,
 				F8845505197BB38C00BBCE06 /* SocketRocket */,
 				F8D6CACC197A1DD20068EFE6 /* HyperInk */,
 				F8D6CAEB197A1DD20068EFE6 /* HyperInkTests */,
@@ -300,6 +311,7 @@
 			files = (
 				F8D6CADF197A1DD20068EFE6 /* Images.xcassets in Resources */,
 				F8D6CAD1197A1DD20068EFE6 /* InfoPlist.strings in Resources */,
+				F866CF8D197BEDA000A250AD /* hyperinksplash.png in Resources */,
 				F8D6CADA197A1DD20068EFE6 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

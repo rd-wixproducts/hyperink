@@ -32,6 +32,10 @@ using namespace cv;
 {
     [super viewDidLoad];
     
+    NSString *imageName = [[NSBundle mainBundle] pathForResource:@"hyperinksplash" ofType:@"png"];
+    UIImage *img = [UIImage imageWithContentsOfFile:imageName];
+    [self.imageView setImage:img];
+    
     self.imageView.userInteractionEnabled = YES;
     UITapGestureRecognizer *recognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTap:)];
     [self.imageView addGestureRecognizer:recognizer];
