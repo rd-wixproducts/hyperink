@@ -85,11 +85,10 @@ app.controller('paperCtrl', function($scope) {
     if($scope.curve)
       $scope.curve.setAttribute('d', $scope.curve.getAttribute('d') + 'L'+($event.pageX - document.getElementById('paper').offsetLeft)+' '+($event.pageY- document.getElementById('paper').offsetTop));
   }
-  
+*/  
   window.onresize = function() {
     $scope.$apply();
   };
-  */
 
 });
 
