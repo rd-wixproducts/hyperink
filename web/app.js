@@ -8,10 +8,9 @@ app.controller('paperCtrl', function($scope) {
   $scope.showMousedCmt = false;
   $scope.curve = undefined;
 
-
   $scope.createComment = function($event) {
     $scope.makingComment = false;
-
+    
     $scope.tempComment = {
       x: $event.pageX - paper.offsetLeft,
       y: $event.pageY,
@@ -38,6 +37,7 @@ app.controller('paperCtrl', function($scope) {
   $scope.submitComment = function() {
     $scope.tempComment.text = $scope.commentText;
     $scope.comments.push($scope.tempComment);
+    
     $scope.tempComment = {};
     $scope.commentText = '';
     $scope.makingComment = false;
@@ -64,6 +64,7 @@ app.controller('paperCtrl', function($scope) {
     return {'left': nX + 'px', 'top': y + 'px'};
   };
 
+  /*
   onmousedown = function($event){
     $scope.curve = document.createElementNS('http://www.w3.org/2000/svg','path');
     $scope.curve.setAttribute('d', 'M'+ ($event.pageX - document.getElementById('paper').offsetLeft) +' '+($event.pageY- document.getElementById('paper').offsetTop))
@@ -75,6 +76,7 @@ app.controller('paperCtrl', function($scope) {
   onmouseup = function(){
     $scope.curve.setAttribute('fill', 'rgba(250, 200, 200, 0.2)');
     $scope.curve.setAttribute('stroke', 'rgba(100, 140, 255, 0)')
+    $scope.prev_curve = $scope.curve;
     $scope.curve = undefined;
   }
 
@@ -87,6 +89,7 @@ app.controller('paperCtrl', function($scope) {
   window.onresize = function() {
     $scope.$apply();
   };
+  */
 
 });
 
