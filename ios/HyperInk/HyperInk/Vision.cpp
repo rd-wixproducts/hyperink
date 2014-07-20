@@ -31,7 +31,7 @@ namespace Vision
 #define TARGET_WIDTH (1000)
 #define OLDDIST_REQUIREMENT (7500.0)
 #define DIST_REQUIREMENT (2500.0)
-#define OLDMATCH_REQUIREMENT 2
+#define OLDMATCH_REQUIREMENT 5
 #define MATCH_REQUIREMENT 10
 
     static Scalar color_red = Scalar(0, 0, 255, 255);
