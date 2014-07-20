@@ -34,7 +34,7 @@ namespace Vision
     static Scalar color_blue = Scalar(255, 0, 0, 255);
     static Scalar color_green = Scalar(0, 255, 0, 255);
 
-    std::vector<Point> findRect(cv::Mat &image);
+    std::vector<Point> findRect(cv::Mat &image, cv::Mat &dest);
     
     void drawRect(cv::Mat &image, std::vector<Point> rect);
     
@@ -44,10 +44,11 @@ namespace Vision
     
     bool processImage(cv::Mat &image, cv::Mat &transImage)
     {
-        vector<Point> rect = findRect(image);
+        static Mat dest(image.rows, image.cols, CV_8UC1);
+        vector<Point> rect = findRect(image, dest);
         if (!rect.empty()) {
-            transform(image, rect, transImage);
-            cvtColor(transImage, transImage, CV_BGR2RGB);
+            transform(dest, rect, transImage);
+            // cvtColor(transImage, transImage, CV_BGR2RGB);
             drawRect(image, rect);
             return true;
         }
@@ -65,11 +66,11 @@ namespace Vision
         }
     }
     
-    std::vector<Point> findRect(cv::Mat &image)
+    std::vector<Point> findRect(cv::Mat &image, cv::Mat &dest)
     {
         // image dimensions must never change between calls
         // because of statically allocated data structures
-        static Mat dest(image.rows, image.cols, CV_8UC1);
+        // static Mat dest(image.rows, image.cols, CV_8UC1);
         static Mat grey(image.rows, image.cols, CV_8UC1);
         cvtColor(image, grey, CV_BGR2GRAY);
         bilateralFilter(grey, dest, BILATERAL_DIAM, BILATERAL_SIGMACOLOR, BILATERAL_SIGMASPACE);
