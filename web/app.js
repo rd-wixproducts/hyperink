@@ -121,8 +121,15 @@ app.controller('paperCtrl', function($scope, $firebase) {
   };
 
   $scope.clearAll = function() {
+      console.log('clearing all');
     for (cmt in $scope.comments) {
+        try {
+            if (typeof cmt === 'string') {
       $scope.comments.$remove(cmt);
+            }
+        } catch (err) {
+            // ignore
+        }
     }
   };
 
