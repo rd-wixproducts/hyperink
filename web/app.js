@@ -120,12 +120,6 @@ app.controller('paperCtrl', function($scope, $firebase) {
     $scope.showMousedCmt = false;
   };
 
-  $scope.clearAll = function() {
-    for (cmt in $scope.comments) {
-      $scope.comments.$remove(cmt);
-    }
-  };
-
   $scope.cmtStyle = function(x, y) {
     var nX = x + paper.offsetLeft;
     return {'left': nX + 'px', 'top': y + 'px'};
