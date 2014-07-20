@@ -168,6 +168,8 @@ typedef void (^data_callback)(SRWebSocket *webSocket,  NSData *data);
 
 @interface SRWebSocket ()  <NSStreamDelegate>
 
+@property (atomic) BOOL sending;
+
 - (void)_writeData:(NSData *)data;
 - (void)_closeWithProtocolError:(NSString *)message;
 - (void)_failWithError:(NSError *)error;
@@ -285,6 +287,7 @@ static __strong NSData *CRLFCRLF;
         
         [self _SR_commonInit];
     }
+    self.sending = NO;
     
     return self;
 }
@@ -689,11 +692,18 @@ static __strong NSData *CRLFCRLF;
     [_outputBuffer appendData:data];
     [self _pumpWriting];
 }
+
 - (void)send:(id)data;
 {
+    if (self.sending) {
+        NSLog(@"Aborting sending...");
+        return;
+    }
+    NSLog(@"Sending");
+    self.sending = YES;
     NSAssert(self.readyState != SR_CONNECTING, @"Invalid State: Cannot call send: until connection is open");
     // TODO: maybe not copy this for performance
-    data = [data copy];
+    // data = [data copy];
     dispatch_async(_workQueue, ^{
         if ([data isKindOfClass:[NSString class]]) {
             [self _sendFrameWithOpcode:SROpCodeTextFrame data:[(NSString *)data dataUsingEncoding:NSUTF8StringEncoding]];
@@ -704,6 +714,8 @@ static __strong NSData *CRLFCRLF;
         } else {
             assert(NO);
         }
+        NSLog(@"Done sending");
+        self.sending = NO;
     });
 }
 

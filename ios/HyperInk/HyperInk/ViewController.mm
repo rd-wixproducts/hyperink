@@ -8,8 +8,11 @@
 
 #import "ViewController.h"
 
+#import "SRWebSocket.h"
+
 #ifdef __cplusplus
 #import <opencv2/imgproc/imgproc.hpp>
+#import <opencv2/highgui/highgui.hpp>
 #import "Vision.hh"
 #endif
 
@@ -19,6 +22,7 @@ using namespace cv;
 
 @property IBOutlet UIImageView *imageView;
 @property CvVideoCamera *videoCamera;
+@property SRWebSocket *webSocket;
 
 @end
 
@@ -33,6 +37,15 @@ using namespace cv;
     [self.imageView addGestureRecognizer:recognizer];
     
     [self initCamera];
+    [self initSocket];
+}
+
+- (void)initSocket
+{
+    NSURL *url = [NSURL URLWithString:@"ws://hy.protobowl.com:9000"];
+    self.webSocket = [[SRWebSocket alloc] initWithURL:url];
+    // self.webSocket.delegate = self;
+    [self.webSocket open];
 }
 
 - (void)initCamera
@@ -40,7 +53,7 @@ using namespace cv;
     self.videoCamera = [[CvVideoCamera alloc] initWithParentView:self.imageView];
     self.videoCamera.delegate = self;
     self.videoCamera.defaultAVCaptureDevicePosition = AVCaptureDevicePositionBack;
-    self.videoCamera.defaultAVCaptureSessionPreset = AVCaptureSessionPreset1920x1080;
+    self.videoCamera.defaultAVCaptureSessionPreset = AVCaptureSessionPreset1280x720;
     self.videoCamera.defaultAVCaptureVideoOrientation = AVCaptureVideoOrientationLandscapeLeft; // home button on left
     self.videoCamera.defaultFPS = 30;
     self.videoCamera.grayscaleMode = NO;
@@ -72,9 +85,6 @@ using namespace cv;
     }
 }
 
-#pragma mark - Protocol CvVideoCameraDelegate
-
-#ifdef __cplusplus
 - (void)processImage:(Mat&)image;
 {
     static Mat dest;
@@ -85,122 +95,16 @@ using namespace cv;
     lastCalled = now;
     bool success = Vision::processImage(image, dest);
     if (success) {
-        UIImage *img = [self UIImageFromCVMat:dest];
-        NSURL *url = [NSURL URLWithString:@"http://hy.protobowl.com:3000/end"];
-        dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
-            //Background Thread
-            [self uploadImage:img toURL:url withTitle:@"iPhone"];
-        });
+        [self uploadImage:dest];
     }
 }
-#endif
 
-- (void)uploadImage:(UIImage *)image toURL:(NSURL *)url withTitle:(NSString *)title {
-    
-    // encode the image as JPEG
-    NSData *imageData = UIImageJPEGRepresentation(image, 0.9);
-    
-    // set up the request
-    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
-    [request setURL:url];
-    
-    // create a boundary to delineate the file
-    NSString *boundary = @"14737809831466499882746641449";
-    // tell the server what to expect
-    NSString *contentType =
-    [NSString stringWithFormat:@"multipart/form-data; boundary=%@", boundary];
-    [request addValue:contentType forHTTPHeaderField: @"Content-Type"];
-    
-    // make a buffer for the post body
-    NSMutableData *body = [NSMutableData data];
-    
-    // add a boundary to show where the title starts
-    [body appendData:[[NSString stringWithFormat:@"\r\n--%@\r\n", boundary]
-                      dataUsingEncoding:NSASCIIStringEncoding]];
-    
-    // add the title
-    [body appendData:[
-                      @"Content-Disposition: form-data; name=\"title\"\r\n\r\n"
-                      dataUsingEncoding:NSASCIIStringEncoding]];
-    [body appendData:[title
-                      dataUsingEncoding:NSASCIIStringEncoding]];
-    
-    // add a boundary to show where the file starts
-    [body appendData:[[NSString stringWithFormat:@"\r\n--%@\r\n", boundary]
-                      dataUsingEncoding:NSASCIIStringEncoding]];
-    
-    // add a form field
-    [body appendData:[
-                      @"Content-Disposition: form-data; name=\"picture\"; filename=\"image.jpeg\"\r\n"
-                      dataUsingEncoding:NSASCIIStringEncoding]];
-    
-    // tell the server to expect some binary
-    [body appendData:[
-                      @"Content-Type: application/octet-stream\r\n"
-                      dataUsingEncoding:NSASCIIStringEncoding]];
-    [body appendData:[
-                      @"Content-Transfer-Encoding: binary\r\n"
-                      dataUsingEncoding:NSASCIIStringEncoding]];
-    [body appendData:[[NSString stringWithFormat:
-                       @"Content-Length: %lu\r\n\r\n", (unsigned long)imageData.length]
-                      dataUsingEncoding:NSASCIIStringEncoding]];
-    
-    // add the payload
-    [body appendData:[NSData dataWithData:imageData]];
-    
-    // tell the server the payload has ended
-    [body appendData:
-     [[NSString stringWithFormat:@"\r\n--%@--\r\n", boundary]
-      dataUsingEncoding:NSASCIIStringEncoding]];
-    
-    // add the POST data as the request body
-    [request setHTTPMethod:@"POST"];
-    [request setHTTPBody:body];
-    
-    // now lets make the connection to the web
-    NSData *returnData = [NSURLConnection sendSynchronousRequest:request returningResponse:nil error:nil];
-    NSString *returnString = [[NSString alloc] initWithData:returnData encoding:NSUTF8StringEncoding];
-    
-    NSLog(@"%@", returnString);
+- (void)uploadImage:(Mat&)image {
+    vector<uchar> buf;
+    cv::imencode(".jpg", image, buf);
+    NSData *imageData = [NSData dataWithBytes:&buf.front() length:buf.size()];
+    [self.webSocket send:imageData];
 }
-
--(UIImage *)UIImageFromCVMat:(cv::Mat)cvMat
-{
-    NSData *data = [NSData dataWithBytes:cvMat.data length:cvMat.elemSize()*cvMat.total()];
-    CGColorSpaceRef colorSpace;
-    
-    if (cvMat.elemSize() == 1) {
-        colorSpace = CGColorSpaceCreateDeviceGray();
-    } else {
-        colorSpace = CGColorSpaceCreateDeviceRGB();
-    }
-    
-    CGDataProviderRef provider = CGDataProviderCreateWithCFData((__bridge CFDataRef)data);
-    
-    // Creating CGImage from cv::Mat
-    CGImageRef imageRef = CGImageCreate(cvMat.cols,                                 //width
-                                        cvMat.rows,                                 //height
-                                        8,                                          //bits per component
-                                        8 * cvMat.elemSize(),                       //bits per pixel
-                                        cvMat.step[0],                            //bytesPerRow
-                                        colorSpace,                                 //colorspace
-                                        kCGImageAlphaNone|kCGBitmapByteOrderDefault,// bitmap info
-                                        provider,                                   //CGDataProviderRef
-                                        NULL,                                       //decode
-                                        false,                                      //should interpolate
-                                        kCGRenderingIntentDefault                   //intent
-                                        );
-    
-    
-    // Getting UIImage from CGImage
-    UIImage *finalImage = [UIImage imageWithCGImage:imageRef];
-    CGImageRelease(imageRef);
-    CGDataProviderRelease(provider);
-    CGColorSpaceRelease(colorSpace);
-    
-    return finalImage;
-}
-
 
 - (NSUInteger)supportedInterfaceOrientations
 {
