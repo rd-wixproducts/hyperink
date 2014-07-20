@@ -45,12 +45,13 @@ client.on('open', function(stream){
 				ctx.restore()
 
 				var dat = ctx.getImageData(0, 0, canvas.width, canvas.height);
-				var swt = do_magic(dat)
-				var swat = dilate_contours(swt)
-				for(var i = 0; i < swat.data.length; i++){
-					if(!swat.data[i]) dat.data[i * 4 + 3] = 0;
+				if((document.getElementById('magictog') && document.getElementById('magictog').checked) || !document.getElementById('magictog')){
+					var swt = do_magic(dat)
+					var swat = dilate_contours(swt)
+					for(var i = 0; i < swat.data.length; i++){
+						if(!swat.data[i]) dat.data[i * 4 + 3] = 0;
+					}
 				}
-
 
 				most_recent_blob = dat;
 
