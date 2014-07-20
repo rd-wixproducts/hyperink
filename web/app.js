@@ -7,8 +7,6 @@ app.controller('paperCtrl', function($scope) {
   $scope.mousedCmt = {};
   $scope.showMousedCmt = false;
   $scope.curve = undefined;
-  $scope.prev_curve = undefined
-
 
   $scope.createComment = function($event) {
     $scope.makingComment = false;
@@ -66,6 +64,7 @@ app.controller('paperCtrl', function($scope) {
     return {'left': nX + 'px', 'top': y + 'px'};
   };
 
+  /*
   onmousedown = function($event){
     $scope.curve = document.createElementNS('http://www.w3.org/2000/svg','path');
     $scope.curve.setAttribute('d', 'M'+ ($event.pageX - document.getElementById('paper').offsetLeft) +' '+($event.pageY- document.getElementById('paper').offsetTop))
@@ -90,6 +89,7 @@ app.controller('paperCtrl', function($scope) {
   window.onresize = function() {
     $scope.$apply();
   };
+  */
 
 });
 
