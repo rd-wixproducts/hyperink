@@ -29,8 +29,10 @@ namespace Vision
 #define POLY_SIZE_HIGH (0.95)
 #define ASPECT_RATIO (8.5 / 11.0)
 #define TARGET_WIDTH (1000)
-#define DIST_REQUIREMENT (7500.0)
-#define MATCH_REQUIREMENT 4
+#define OLDDIST_REQUIREMENT (7500.0)
+#define DIST_REQUIREMENT (2500.0)
+#define OLDMATCH_REQUIREMENT 2
+#define MATCH_REQUIREMENT 10
 
     static Scalar color_red = Scalar(0, 0, 255, 255);
     static Scalar color_blue = Scalar(255, 0, 0, 255);
@@ -122,30 +124,42 @@ namespace Vision
     std::vector<Point> updateRect(const std::vector<Point> &rect)
     {
         static vector<Point> oldPoints;
-        static vector<Point2f> old;
+        static vector<Point2f> previous;
         static int matches = 0;
+        static int oldMatches = 0;
         
         if (rect.empty()) return oldPoints;
         
         vector<Point2f> sorted = sortRect(rect);
-        if (!old.empty()) {
-            double dist = maxSquareDistances(old, sorted);
+        if (!oldPoints.empty()) {
+            double distFromOld = maxSquareDistances(sortRect(oldPoints), sorted);
+            if (distFromOld < OLDDIST_REQUIREMENT) {
+                oldMatches++;
+            } else {
+                oldMatches = 0;
+            }
+        }
+        if (!previous.empty()) {
+            double dist = maxSquareDistances(previous, sorted);
             if (dist < DIST_REQUIREMENT) {
-                old = sorted;
+                previous = sorted;
                 matches++;
             } else {
-                old = sorted;
+                previous = sorted;
                 matches = 0;
             }
         } else {
-            old = sorted;
+            previous = sorted;
         }
         
-        if (matches > MATCH_REQUIREMENT) {
+        if (oldMatches > OLDMATCH_REQUIREMENT) {
+            oldPoints = rect;
+            return rect;
+        } else if (matches > MATCH_REQUIREMENT) {
             oldPoints = rect;
             return rect;
         } else {
-            return vector<Point>();
+            return oldPoints;
         }
     }
 
