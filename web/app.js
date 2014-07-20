@@ -101,9 +101,15 @@ app.controller('paperCtrl', function($scope, $firebase) {
   };
 
   $scope.removeComment = function() {
-    if (key !== null) {
-        var key = $scope.tempKey;
-        $scope.comments.$remove(key);
+    for(cmt in $scope.comments) {
+        console.log($scope.comments[cmt]);
+        if ($scope.comments[cmt] === null) continue;
+      if($scope.comments[cmt].text === $scope.mousedCmt.text) {
+          console.log(cmt);
+          // console.log("name = " + $scope.comments[cmt].name());
+          $scope.comments.$remove(cmt);
+          // $scope.comments.splice(cmt, 1);
+      }
     }
     $scope.tempComment = null;
     $scope.commentText = '';
