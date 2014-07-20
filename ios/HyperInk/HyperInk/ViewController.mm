@@ -67,6 +67,11 @@ using namespace cv;
 - (void)processImage:(Mat&)image;
 {
     static Mat dest;
+    static double lastCalled = 0;
+    double now = [[NSDate date] timeIntervalSince1970];
+    double delta = now - lastCalled;
+    NSLog(@"FPS: %lf", 1 / delta);
+    lastCalled = now;
     bool success = Vision::processImage(image, dest);
     if (success) {
         UIImage *img = [self UIImageFromCVMat:dest];
