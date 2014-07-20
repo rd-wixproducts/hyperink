@@ -66,8 +66,8 @@ client.on('open', function(stream){
 				ctx.drawImage(img, -1000, 0)
 				ctx.restore()
 
-				// var dat = ctx.getImageData(0, 0, canvas.width, canvas.height);
-				// do_magic(dat)
+				var dat = ctx.getImageData(0, 0, canvas.width, canvas.height);
+				do_magic(dat)
 			}
 			
 		});
