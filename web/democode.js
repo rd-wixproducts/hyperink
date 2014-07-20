@@ -1,5 +1,6 @@
 var canvas, ctx;
-var client = BinaryClient('ws://' + location.host);
+var client = BinaryClient('ws://hy.protobowl.com:3000/');
+
 var lastrender = 0;
 
 function get_ctx(){
