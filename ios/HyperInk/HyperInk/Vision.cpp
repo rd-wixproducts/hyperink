@@ -130,7 +130,6 @@ namespace Vision
         vector<Point2f> sorted = sortRect(rect);
         if (!old.empty()) {
             double dist = sumSquareDistances(old, sorted);
-            cout << "dist = " << dist << endl;
             if (dist < DIST_REQUIREMENT) {
                 old = sorted;
                 matches++;
