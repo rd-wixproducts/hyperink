@@ -118,3 +118,26 @@
 button:focus {
   outline: none;
 }
+
+
+svg {  
+  z-index: 34234;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+path {
+   fill: none;
+   stroke-width: 3;
+   stroke: rgba(100, 140, 255, 0.8);
+}
+
+path.done {
+  fill: rgba(100, 140, 255, 0.2);
+  stroke: none;
+}
+
+path:hover {
+  fill: rgba(0, 155, 0, 0.4);
+}
