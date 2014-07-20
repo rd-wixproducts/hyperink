@@ -23,7 +23,6 @@ app.controller('paperCtrl', function($scope, $firebase) {
     $scope.tempKey = null;
     $scope.comments.$add($scope.tempComment).then(function(ref) {
         $scope.tempKey = ref.name();
-        console.log($scope.tempKey);
     });
   };
 
@@ -41,7 +40,6 @@ app.controller('paperCtrl', function($scope, $firebase) {
           var key = $scope.tempKey;
           var newData = {};
           newData[key] = $scope.tempComment;
-          console.log(newData);
           $scope.comments.$update(newData);
       }
     }
@@ -57,7 +55,6 @@ app.controller('paperCtrl', function($scope, $firebase) {
           var key = $scope.tempKey;
           var newData = {};
           newData[key] = $scope.tempComment;
-          console.log(newData);
           $scope.comments.$update(newData);
       }
     }
@@ -88,7 +85,6 @@ app.controller('paperCtrl', function($scope, $firebase) {
         var key = $scope.tempKey;
         var newData = {};
         newData[key] = $scope.tempComment;
-        console.log(newData);
         $scope.comments.$update(newData);
     }
     
@@ -114,7 +110,6 @@ app.controller('paperCtrl', function($scope, $firebase) {
   };
 
   $scope.clearAll = function() {
-      console.log('clearing all');
     for (cmt in $scope.comments) {
         try {
             if (typeof cmt === 'string') {
