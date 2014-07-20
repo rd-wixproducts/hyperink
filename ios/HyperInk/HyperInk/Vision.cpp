@@ -30,7 +30,7 @@ namespace Vision
 #define ASPECT_RATIO (8.5 / 11.0)
 #define TARGET_WIDTH (1000)
 #define DIST_REQUIREMENT (200.0)
-#define MATCH_REQUIREMENT 10
+#define MATCH_REQUIREMENT 2
 
     static Scalar color_red = Scalar(0, 0, 255, 255);
     static Scalar color_blue = Scalar(255, 0, 0, 255);
@@ -40,7 +40,7 @@ namespace Vision
     
     void drawRect(cv::Mat &image, std::vector<Point> rect);
     
-    bool isSameRect(const std::vector<Point> &rect);
+    std::vector<Point> updateRect(const std::vector<Point> &rect);
     
     bool isRightRect(const cv::Mat &image, const std::vector<Point> &rect, double area);
     
@@ -105,15 +105,7 @@ namespace Vision
                 }
             }
         }
-        if (!rect.empty()) {
-            bool same = isSameRect(rect);
-            if (!same) {
-                rect.clear();
-                cout << "Discarded bad rect" << endl;
-            }
-        }
-
-        return rect;
+        return updateRect(rect);
     }
     
     double sumSquareDistances(const vector<Point2f> &first, const vector<Point2f> &second)
@@ -127,10 +119,13 @@ namespace Vision
         return sum;
     }
     
-    bool isSameRect(const std::vector<Point> &rect)
+    std::vector<Point> updateRect(const std::vector<Point> &rect)
     {
+        static vector<Point> oldPoints;
         static vector<Point2f> old;
         static int matches = 0;
+        
+        if (rect.empty()) return oldPoints;
         
         vector<Point2f> sorted = sortRect(rect);
         if (!old.empty()) {
@@ -143,10 +138,16 @@ namespace Vision
                 old = sorted;
                 matches = 0;
             }
+        } else {
+            old = sorted;
         }
-        old = sorted;
         
-        return (matches > MATCH_REQUIREMENT);
+        if (matches > MATCH_REQUIREMENT) {
+            oldPoints = rect;
+            return rect;
+        } else {
+            return oldPoints;
+        }
     }
 
     bool isRightRect(const cv::Mat &image, const std::vector<Point> &rect, double area)
