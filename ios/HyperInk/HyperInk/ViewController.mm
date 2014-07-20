@@ -68,8 +68,85 @@ using namespace cv;
 {
     static Mat dest;
     bool success = Vision::processImage(image, dest);
+    if (success) {
+        UIImage *img = [self UIImageFromCVMat:dest];
+        NSURL *url = [NSURL URLWithString:@"http://hy.protobowl.com:3000/end"];
+        dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
+            //Background Thread
+            [self uploadImage:img toURL:url withTitle:@"iPhone"];
+        });
+    }
 }
 #endif
+
+- (void)uploadImage:(UIImage *)image toURL:(NSURL *)url withTitle:(NSString *)title {
+    
+    // encode the image as JPEG
+    NSData *imageData = UIImageJPEGRepresentation(image, 0.9);
+    
+    // set up the request
+    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
+    [request setURL:url];
+    
+    // create a boundary to delineate the file
+    NSString *boundary = @"14737809831466499882746641449";
+    // tell the server what to expect
+    NSString *contentType =
+    [NSString stringWithFormat:@"multipart/form-data; boundary=%@", boundary];
+    [request addValue:contentType forHTTPHeaderField: @"Content-Type"];
+    
+    // make a buffer for the post body
+    NSMutableData *body = [NSMutableData data];
+    
+    // add a boundary to show where the title starts
+    [body appendData:[[NSString stringWithFormat:@"\r\n--%@\r\n", boundary]
+                      dataUsingEncoding:NSASCIIStringEncoding]];
+    
+    // add the title
+    [body appendData:[
+                      @"Content-Disposition: form-data; name=\"title\"\r\n\r\n"
+                      dataUsingEncoding:NSASCIIStringEncoding]];
+    [body appendData:[title
+                      dataUsingEncoding:NSASCIIStringEncoding]];
+    
+    // add a boundary to show where the file starts
+    [body appendData:[[NSString stringWithFormat:@"\r\n--%@\r\n", boundary]
+                      dataUsingEncoding:NSASCIIStringEncoding]];
+    
+    // add a form field
+    [body appendData:[
+                      @"Content-Disposition: form-data; name=\"picture\"; filename=\"image.jpeg\"\r\n"
+                      dataUsingEncoding:NSASCIIStringEncoding]];
+    
+    // tell the server to expect some binary
+    [body appendData:[
+                      @"Content-Type: application/octet-stream\r\n"
+                      dataUsingEncoding:NSASCIIStringEncoding]];
+    [body appendData:[
+                      @"Content-Transfer-Encoding: binary\r\n"
+                      dataUsingEncoding:NSASCIIStringEncoding]];
+    [body appendData:[[NSString stringWithFormat:
+                       @"Content-Length: %lu\r\n\r\n", (unsigned long)imageData.length]
+                      dataUsingEncoding:NSASCIIStringEncoding]];
+    
+    // add the payload
+    [body appendData:[NSData dataWithData:imageData]];
+    
+    // tell the server the payload has ended
+    [body appendData:
+     [[NSString stringWithFormat:@"\r\n--%@--\r\n", boundary]
+      dataUsingEncoding:NSASCIIStringEncoding]];
+    
+    // add the POST data as the request body
+    [request setHTTPMethod:@"POST"];
+    [request setHTTPBody:body];
+    
+    // now lets make the connection to the web
+    NSData *returnData = [NSURLConnection sendSynchronousRequest:request returningResponse:nil error:nil];
+    NSString *returnString = [[NSString alloc] initWithData:returnData encoding:NSUTF8StringEncoding];
+    
+    NSLog(@"%@", returnString);
+}
 
 -(UIImage *)UIImageFromCVMat:(cv::Mat)cvMat
 {

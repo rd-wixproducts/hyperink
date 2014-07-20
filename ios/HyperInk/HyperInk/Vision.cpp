@@ -47,6 +47,7 @@ namespace Vision
         vector<Point> rect = findRect(image);
         if (!rect.empty()) {
             transform(image, rect, transImage);
+            cvtColor(transImage, transImage, CV_BGR2RGB);
             drawRect(image, rect);
             return true;
         }
