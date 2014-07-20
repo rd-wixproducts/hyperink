@@ -29,6 +29,8 @@ namespace Vision
 #define POLY_SIZE_HIGH (0.95)
 #define ASPECT_RATIO (8.5 / 11.0)
 #define TARGET_WIDTH (1000)
+#define DIST_REQUIREMENT (200.0)
+#define MATCH_REQUIREMENT 10
 
     static Scalar color_red = Scalar(0, 0, 255, 255);
     static Scalar color_blue = Scalar(255, 0, 0, 255);
@@ -38,9 +40,15 @@ namespace Vision
     
     void drawRect(cv::Mat &image, std::vector<Point> rect);
     
+    bool isSameRect(const std::vector<Point> &rect);
+    
     bool isRightRect(const cv::Mat &image, const std::vector<Point> &rect, double area);
     
     void transform(const cv::Mat &image, const std::vector<Point> &rect, cv::Mat &out);
+    
+    vector<Point2f> sortRect(const std::vector<Point> &rect);
+    
+    double sumSquareDistances(const vector<Point2f> &first, const vector<Point2f> &second);
     
     bool processImage(cv::Mat &image, cv::Mat &transImage)
     {
@@ -90,15 +98,55 @@ namespace Vision
             approxPolyDP(hull, poly, len * POLY_APPROX_MULT, true);
             if (poly.size() == 4 && isContourConvex(poly)) {
                 double area = contourArea(poly);
-                if (isRightRect(image, rect, area)) {
+                if (isRightRect(image, poly, area)) {
                     if (rect.size() == 0 || len > arcLength(rect, true)) {
                         rect = poly;
                     }
                 }
             }
         }
+        if (!rect.empty()) {
+            bool same = isSameRect(rect);
+            if (!same) {
+                rect.clear();
+                cout << "Discarded bad rect" << endl;
+            }
+        }
 
         return rect;
+    }
+    
+    double sumSquareDistances(const vector<Point2f> &first, const vector<Point2f> &second)
+    {
+        double sum = 0;
+        for (int i = 0; i < first.size() && i < second.size(); i++) {
+            double dx = first[i].x - second[i].x;
+            double dy = first[i].y - second[i].y;
+            sum += dx * dx + dy * dy;
+        }
+        return sum;
+    }
+    
+    bool isSameRect(const std::vector<Point> &rect)
+    {
+        static vector<Point2f> old;
+        static int matches = 0;
+        
+        vector<Point2f> sorted = sortRect(rect);
+        if (!old.empty()) {
+            double dist = sumSquareDistances(old, sorted);
+            cout << "dist = " << dist << endl;
+            if (dist < DIST_REQUIREMENT) {
+                old = sorted;
+                matches++;
+            } else {
+                old = sorted;
+                matches = 0;
+            }
+        }
+        old = sorted;
+        
+        return (matches > MATCH_REQUIREMENT);
     }
 
     bool isRightRect(const cv::Mat &image, const std::vector<Point> &rect, double area)
@@ -118,11 +166,10 @@ namespace Vision
     {
         return a.second < b.second;
     }
-
-    void transform(const cv::Mat &image, const std::vector<Point> &rect, cv::Mat &out)
+    
+    vector<Point2f> sortRect(const std::vector<Point> &rect)
     {
         assert(rect.size() == 4);
-        
         vector<pii> points;
         for (const auto &point : rect) {
             points.push_back(make_pair(point.x, point.y));
@@ -131,7 +178,7 @@ namespace Vision
         sort(points.begin(), points.end(), byX);
         sort(points.begin(), points.begin() + 2, byY);
         sort(points.begin() + 2, points.end(), byY);
-
+        
         // points is now in order:
         // topLeft, bottomLeft, topRight, bottomRight
         
@@ -139,6 +186,14 @@ namespace Vision
         for (const auto &point : points) {
             from.emplace_back(point.first, point.second);
         }
+        
+        return from;
+
+    }
+
+    void transform(const cv::Mat &image, const std::vector<Point> &rect, cv::Mat &out)
+    {
+        vector<Point2f> from = sortRect(rect);
 
         int width = TARGET_WIDTH;
         int height = width * ASPECT_RATIO;

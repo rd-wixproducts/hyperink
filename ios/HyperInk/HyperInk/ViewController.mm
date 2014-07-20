@@ -81,7 +81,7 @@ using namespace cv;
     static double lastCalled = 0;
     double now = [[NSDate date] timeIntervalSince1970];
     double delta = now - lastCalled;
-    NSLog(@"FPS: %lf", 1 / delta);
+    // NSLog(@"FPS: %lf", 1 / delta);
     lastCalled = now;
     bool success = Vision::processImage(image, dest);
     if (success) {
