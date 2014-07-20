@@ -1,12 +1,8 @@
 var canvas, ctx;
 var client = BinaryClient('ws://' + location.host);
 var lastrender = 0;
-
-function get_ctx(){
-	if(!document.getElementById('swag')){
-		setTimeout(get_ctx, 10)
-		return
-	}
+client.on('open', function(stream){
+	console.log('wumbo')
 	canvas = document.getElementById('swag');
 	ctx = canvas.getContext('2d')
 
@@ -14,14 +10,7 @@ function get_ctx(){
 	mini_height = Math.floor(canvas.height / 10);
 
 	edit_times = new Float64Array(mini_width * mini_height);
-}
 
-
-get_ctx();
-
-client.on('open', function(stream){
-	console.log('wumbo')
-	
 
 	client.on('stream', function(stream, meta){
 		var fuppies = (1000/(Date.now() - lastrender))

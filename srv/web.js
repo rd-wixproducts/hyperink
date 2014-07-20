@@ -29,7 +29,7 @@ var os = require('os'),
 	path = require('path')
 var Busboy = require('busboy');
 
-app.use(express.static(__dirname + '/public'));
+app.use(express.static(__dirname + '/../web'));
 
 app.get('/', function (req, res) {
 	res.redirect('/demo.html')
