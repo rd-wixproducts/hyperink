@@ -1,7 +1,24 @@
 var http_port = 3000,
 	ws_port = 9000;
-
+var BufferReadStream = require('streamers').BufferReadStream;
 var express = require('express');
+var ws = require('streamws');
+var wss =  new ws.Server({
+	host: '0.0.0.0',
+    chunkSize: 40960,
+    port: ws_port
+})
+
+wss.on('connection', function(socket){
+	console.log('real con')
+	socket.binaryType = 'arraybuffer'
+	socket.on('message', function(data){
+		// console.log('got from anish', data)
+		// broadcast(data.data)
+		broadcast(new BufferReadStream(data, {chunkSize: 40960}))
+	})
+});
+
 var BinaryServer = require('binaryjs').BinaryServer;
 
 var app = express();
@@ -18,13 +35,19 @@ app.get('/', function (req, res) {
 	res.redirect('/demo.html')
 })
 
+var counter = 0;
+
 function broadcast(stream, meta){
+	// var file = fs.createWriteStream('yolo/'+counter+'.jpg');
+	// stream.pipe(file)
+	// counter++;
+
 	var count = 0;
 	for(var id in bs.clients){
       if(bs.clients.hasOwnProperty(id)){
       	count++;
         var otherClient = bs.clients[id];
-		console.log('hey client', id)
+		// console.log('hey client', id)
 		var send = otherClient.createStream(meta);
 		stream.pipe(send);
       }
@@ -50,10 +73,12 @@ app.post('/end', function (req, res) {
 
 
 bs.on('connection', function(client){
-	// client.on('stream', function(stream, meta){
-	//   var file = fs.createWriteStream(meta.file);
-	//   stream.pipe(file);
-	// }); 
+	client.on('stream', function(stream, meta){
+	  // var file = fs.createWriteStream(meta.file);
+	  // stream.pipe(file);
+		console.log('hay anish')
+		broadcast(stream, meta)
+	}); 
 	
 });
 

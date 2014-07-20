@@ -32,10 +32,10 @@
 <script>
 var client = BinaryClient('ws://' + location.host);
 client.on('open', function(stream){
-	var stream = client.createStream({file: 'hello.txt'});
-	stream.write('Hello');
-	stream.write('World!');
-	stream.end();
+	// var stream = client.createStream({file: 'hello.txt'});
+	// stream.write('Hello');
+	// stream.write('World!');
+	// stream.end();
 
 	console.log('wumbo')
 
