@@ -75,6 +75,7 @@ using namespace cv;
     {
         NSLog(@"Starting video camera");
         [self.videoCamera start];
+        [self initSocket];
         NSArray *devices = [AVCaptureDevice devices];
         NSError *error;
         for (AVCaptureDevice *device in devices) {
