@@ -13,6 +13,15 @@
   padding: 0;
   float: left;
   z-index: -5;
+  opacity: .75;
+}
+
+.ppn {
+  position: absolute;
+  z-index: 1;
+  color: purple;
+  opacity: .3;
+  font-size: 26px;
 }
 
 .circle {

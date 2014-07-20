@@ -3,36 +3,19 @@
     <div class="logo">
       hyperink
     </div>
-    <img src="background-image.png" class="bckimg"></img>
-    <img src="background-image.png" class="bckimg"></img>
-    <img src="background-image.png" class="bckimg"></img>
-    <img src="background-image.png" class="bckimg"></img>
-    <img src="background-image.png" class="bckimg"></img>
-    <img src="background-image.png" class="bckimg"></img>
-    <img src="background-image.png" class="bckimg"></img>
-    <img src="background-image.png" class="bckimg"></img>
-    <img src="background-image.png" class="bckimg"></img>
-    <img src="background-image.png" class="bckimg"></img>
-    <img src="background-image.png" class="bckimg"></img>
-    <img src="background-image.png" class="bckimg"></img>
-    <img src="background-image.png" class="bckimg"></img>
-    <img src="background-image.png" class="bckimg"></img>
-    <img src="background-image.png" class="bckimg"></img>
-    <img src="background-image.png" class="bckimg"></img>
-    <img src="background-image.png" class="bckimg"></img>
-    <img src="background-image.png" class="bckimg"></img>
-    <img src="background-image.png" class="bckimg"></img>
-    <img src="background-image.png" class="bckimg"></img>
   </div>
   <div>
-    <div id="paper" class="paper" data-ng-click="createComment($event)">
+    <div id="paper" class="paper" data-ng-click="createComment($event)"
+         title="Click to add annotation.">
       <svg id="hyperspace"></svg>
     </div>
     <div data-ng-repeat="cmt in comments">
-      <div data-ng-style="cmtStyle(cmt.x, cmt.y)" 
-           data-ng-mouseover="showComment(cmt)"
-           class="circle">
-      </div>
+      <span data-ng-style="cmtStyle(cmt.x, cmt.y)" 
+            style="position: absolute;
+                   color: purple;"
+            data-ng-mouseover="showComment(cmt)"
+            class="glyphicon glyphicon-pushpin ppn">
+      </span>
       <div class="comment">
       </div>
     </div>
@@ -59,7 +42,7 @@
          data-ng-show="showMousedCmt">
       <div>
         <button class="close" data-ng-click="removeComment()">
-          <span aria-hidden-"true">x</span>
+          <span aria-hidden-"true" title="Remove this annotation.">x</span>
         </button>
       </div>
       <div>
