@@ -22,6 +22,9 @@
          data-ng-mousemove="mouseMove($event)"
          data-ng-mouseup="mouseUp($event)"
          title="Click to add annotation.">
+      
+      <canvas id="swag" width="773" height="1000" style="width: 100%"></canvas>
+
       <svg id="hyperspace">
         <path data-ng-repeat="cmt in comments"
               style="background-color: purple;
