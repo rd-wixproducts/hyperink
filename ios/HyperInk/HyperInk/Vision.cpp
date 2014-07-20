@@ -57,7 +57,7 @@ namespace Vision
         static Mat dest(image.rows, image.cols, CV_8UC1);
         vector<Point> rect = findRect(image, dest);
         if (!rect.empty()) {
-            transform(image, rect, transImage);
+            transform(dest, rect, transImage);
             // cvtColor(transImage, transImage, CV_BGR2RGB);
             drawRect(image, rect);
             return true;
@@ -81,14 +81,14 @@ namespace Vision
         // image dimensions must never change between calls
         // because of statically allocated data structures
         // static Mat dest(image.rows, image.cols, CV_8UC1);
-        static Mat grey(image.rows, image.cols, CV_8UC1);
-        cvtColor(image, grey, CV_BGR2GRAY);
+        static Mat bilat(image.rows, image.cols, CV_8UC1);
+        cvtColor(image, dest, CV_BGR2GRAY);
         static Mat smaller(0, 0, CV_8UC1);
-        resize(grey, smaller, Size(0, 0), 0.5, 0.5);
-        bilateralFilter(smaller, dest, BILATERAL_DIAM, BILATERAL_SIGMACOLOR, BILATERAL_SIGMASPACE);
+        resize(dest, smaller, Size(0, 0), 0.5, 0.5);
+        bilateralFilter(smaller, bilat, BILATERAL_DIAM, BILATERAL_SIGMACOLOR, BILATERAL_SIGMASPACE);
 
         static Mat canny_output;
-        Canny(dest, canny_output, CANNY_THRESH, CANNY_THRESH * 2);
+        Canny(bilat, canny_output, CANNY_THRESH, CANNY_THRESH * 2);
         
         vector<vector<Point>> contours;
         findContours(canny_output, contours, CV_RETR_LIST, CV_CHAIN_APPROX_SIMPLE);
