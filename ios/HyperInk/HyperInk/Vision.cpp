@@ -25,7 +25,7 @@ namespace Vision
 #define BILATERAL_DIAM (5)
 #define BILATERAL_SIGMACOLOR (50)
 #define BILATERAL_SIGMASPACE (50)
-#define POLY_SIZE_LOW (0.1)
+#define POLY_SIZE_LOW (0.02)
 #define POLY_SIZE_HIGH (0.95)
 #define ASPECT_RATIO (8.5 / 11.0)
 #define TARGET_WIDTH (1000)
