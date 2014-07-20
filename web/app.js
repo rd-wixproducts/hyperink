@@ -13,7 +13,7 @@ app.controller('paperCtrl', function($scope, $firebase) {
 
   $scope.mouseDown = function($event) {
     var x = ($event.pageX - paper.offsetLeft),
-        y = ($event.pageY);
+        y = ($event.pageY - paper.offsetTop);
 
     $scope.tempComment = { 
       d: ' M'+x+','+y,
@@ -30,7 +30,7 @@ app.controller('paperCtrl', function($scope, $firebase) {
   $scope.mouseMove = function($event) {
     if($scope.tempComment && !$scope.tempComment.done) {
       var x = ($event.pageX - paper.offsetLeft),
-          y = ($event.pageY);
+          y = ($event.pageY - paper.offsetTop);
 
       $scope.tempComment.d += ' L'+x+','+y;
       $scope.tempComment.minX = Math.min($scope.tempComment.minX, x);
