@@ -15,20 +15,81 @@
   z-index: -5;
 }
 
-.paper {
-  position: relative;
-  z-index: 0;
-  width: 850px;
-  height: 1100px;
-  background-color: #ffffff;
+.circle {
+  width: 10px;
+  height: 10px;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+  position: absolute;
+  z-index: 1;
+  color: purple;
+  background-color: purple;
+  opacity: .5;
+}
+
+.cmt {
+  position: absolute;
+  background-color: white;
+  color: purple;
+  border: 5px solid purple;
+  padding: 5px;
+  z-index: 7;
+  height: auto;
+  max-width: 300px;
+  font-family: monospace;
+  box-shadow: 2px 2px 3px rgba(0, 0, 0, 0.5);
+}
+
+.cmtDialog {
+  position: absolute;
   margin-left: auto;
   margin-right: auto;
-  box-shadow: 5px 5px 3px rgba(0, 0, 0, 0.3);
-  border: 1px solid #aaaaaa;
+  width: 300px;
+  box-shadow: 2px 2px 3px rgba(0, 0, 0, 0.5);
+  z-index: 3;
+  border: 4px solid purple;
+  background-color: white;
+}
+
+.cmtDialogBody {
+  font-family: monospace;
+  width: 278px;
+  height: 100px;
+  padding: 5px;
+  border: none;
+  resize: none;
+  margin-left: 6px;
+  margin-top: 4px;
+}
+
+.cmtDialogButton {
+  font-family: monospace;
+  float: right;
+  color: purple;
+  margin-top: 4px;
+  margin-bottom: 4px;
+}
+
+.cmtDialogButton:hover {
+  color: rgb(75, 0, 75) !important;
+  background-color: rgb(240, 240, 240) !important;
+}
+
+.cmtDialogTitle {
+  font-family: monospace;
+  color: purple;
+  padding: 5px;
+
 }
 
 .comment {
 
+}
+
+.hLine {
+  height: 1px;
+  background-color: purple;
 }
 
 .logo {
@@ -41,15 +102,19 @@
   text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
 }
 
-.circle {
-  width: 30px;
-  height: 30px;
-  -webkit-border-radius: 6px;
-  -moz-border-radius: 6px;
-  border-radius: 12px;
-  position: absolute;
-  z-index: 1;
-  color: purple;
+.paper {
+  position: relative;
+  z-index: 0;
+  width: 850px;
+  height: 1100px;
+  background-color: #ffffff;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 20px;
+  box-shadow: 5px 5px 3px rgba(0, 0, 0, 0.3);
+  border: 1px solid #aaaaaa;
 }
 
-
+button:focus {
+  outline: none;
+}

@@ -28,11 +28,36 @@
     <div id="paper" class="paper" data-ng-click="createComment($event)">
     </div>
     <div data-ng-repeat="cmt in comments">
-      <div data-ng-style="cmtStyle(cmt.x, cmt.y)" class="circle">
-           {{cmt.x}}
-           {{cmt.y}}
+      <div data-ng-style="cmtStyle(cmt.x, cmt.y)" 
+           data-ng-mouseover="showComment(cmt)"
+           class="circle">
       </div>
       <div class="comment">
+      </div>
+    </div>
+    <div data-ng-style="cmtStyle(tempComment.x, tempComment.y)"
+         class="cmtDialog"
+         data-ng-show="makingComment">
+      <div class="cmtDialogTitle">Write Comment</div>
+      <div class="hLine"></div>
+      <textarea class="cmtDialogBody" 
+                data-ng-model="commentText"
+                placeholder="Write your comment here..."></textarea>
+      <div class="hLine"></div>
+      <button class="cmtDialogButton btn"
+              style="margin-bottom: 4px; margin-right: 4px;"
+              data-ng-hide="hideCommentButton()"
+              data-ng-click="submitComment();">Comment</button>
+      <button class="cmtDialogButton btn"
+              style="margin-bottom: 4px; margin-right: 4px;"
+              data-ng-click="closeCommentDialog()">Cancel</button>
+    </div>
+    <div class="cmt"
+         data-ng-style="cmtStyle(mousedCmt.x, mousedCmt.y)"
+         data-ng-mouseleave="hideComment()"
+         data-ng-show="showMousedCmt">
+      <div>
+        {{mousedCmt.text}}
       </div>
     </div>
   </div>
