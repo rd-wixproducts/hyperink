@@ -24,18 +24,18 @@
     <img src="background-image.png" class="bckimg"></img>
     <img src="background-image.png" class="bckimg"></img>
   </div>
-  <div >
-    <div id="paper" class="paper" data-ng-mousedown="mouseDown($event)"
-      data-ng-mousemove="mouseMove($event)"
-      data-ng-mouseup="mouseUp($event)">
-      <svg>
-        <path data-ng-repeat="cmt in comments" 
-          d="{{cmt.d}}" data-ng-class="{done: cmt.done}"
-          data-ng-mouseover="showComment(cmt)">
-      </svg>
+  <div>
+    <div id="paper" class="paper" data-ng-click="createComment($event)">
+      <svg id="hyperspace"></svg>
     </div>
-
-    
+    <div data-ng-repeat="cmt in comments">
+      <div data-ng-style="cmtStyle(cmt.x, cmt.y)" 
+           data-ng-mouseover="showComment(cmt)"
+           class="circle">
+      </div>
+      <div class="comment">
+      </div>
+    </div>
     <div data-ng-style="cmtStyle(tempComment.x, tempComment.y)"
          class="cmtDialog"
          data-ng-show="makingComment">
@@ -53,16 +53,15 @@
               style="margin-bottom: 4px; margin-right: 4px;"
               data-ng-click="closeCommentDialog()">Cancel</button>
     </div>
-
     <div class="cmt"
          data-ng-style="cmtStyle(mousedCmt.x, mousedCmt.y)"
-         
+         data-ng-mouseleave="hideComment()"
          data-ng-show="showMousedCmt">
-      <!-- <div>
+      <div>
         <button class="close" data-ng-click="removeComment()">
           <span aria-hidden-"true">x</span>
         </button>
-      </div> -->
+      </div>
       <div>
         {{mousedCmt.text}}
       </div>

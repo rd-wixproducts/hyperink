@@ -8,59 +8,25 @@ app.controller('paperCtrl', function($scope) {
   $scope.showMousedCmt = false;
   $scope.curve = undefined;
 
-  // $scope.createComment = function($event) {
-  //   $scope.makingComment = false;
+  $scope.createComment = function($event) {
+    $scope.makingComment = false;
     
-  //   $scope.tempComment = {
-  //     x: $event.pageX - paper.offsetLeft,
-  //     y: $event.pageY,
-  //     text: ''
-  //   };
-
-  //   $scope.makingComment = true;
-
-  // };
-  $scope.mouseDown = function($event){
-    console.log($event)
-    var x = ($event.pageX - paper.offsetLeft),
-        y = ($event.pageY);
-
     $scope.tempComment = {
-      d: ' M'+x+','+y,
-      minX: x, maxX: x,
-      minY: y, maxY: y
-    }
-    $scope.comments.push($scope.tempComment);
-  }
-  $scope.mouseMove = function($event){
-    // console.log($event)
-    if($scope.tempComment && !$scope.tempComment.done){
-      var x = ($event.pageX - paper.offsetLeft),
-          y = ($event.pageY);
+      x: $event.pageX - paper.offsetLeft,
+      y: $event.pageY,
+      text: ''
+    };
 
-      $scope.tempComment.d += ' L'+x+','+y
-      $scope.tempComment.minX = Math.min($scope.tempComment.minX, x)
-      $scope.tempComment.maxX = Math.max($scope.tempComment.maxX, x)
-      $scope.tempComment.minY = Math.min($scope.tempComment.minY, y)
-      $scope.tempComment.maxY = Math.max($scope.tempComment.maxY, y)
-    }
-  }
-  $scope.mouseUp = function(){
-    $scope.tempComment.done = true;
-    $scope.tempComment.x = $scope.tempComment.minX / 2 + $scope.tempComment.maxX / 2;
-    $scope.tempComment.y = $scope.tempComment.minY / 2 + $scope.tempComment.maxY / 2;
-    // $scope.tempComment = null;
     $scope.makingComment = true;
-  }
+
+  };
+
   $scope.hideCommentButton = function() {
     return $scope.commentText === '' || $scope.commentText === undefined;
   };
 
   $scope.showComment = function(cmt) {
-    console.log('showing shit')
-    
     $scope.mousedCmt = cmt;
-
     $scope.showMousedCmt = true;
   };
 
@@ -72,7 +38,7 @@ app.controller('paperCtrl', function($scope) {
     $scope.tempComment.text = $scope.commentText;
     $scope.comments.push($scope.tempComment);
     
-    $scope.tempComment = null;
+    $scope.tempComment = {};
     $scope.commentText = '';
     $scope.makingComment = false;
   };
@@ -97,6 +63,33 @@ app.controller('paperCtrl', function($scope) {
     var nX = x + paper.offsetLeft;
     return {'left': nX + 'px', 'top': y + 'px'};
   };
+
+  /*
+  onmousedown = function($event){
+    $scope.curve = document.createElementNS('http://www.w3.org/2000/svg','path');
+    $scope.curve.setAttribute('d', 'M'+ ($event.pageX - document.getElementById('paper').offsetLeft) +' '+($event.pageY- document.getElementById('paper').offsetTop))
+    $scope.curve.setAttribute('stroke', 'rgba(100, 140, 255, 0.8)')
+    $scope.curve.setAttribute('fill', 'rgba(250, 200, 200, 0)');
+    document.getElementById('hyperspace').appendChild($scope.curve)
+  }
+
+  onmouseup = function(){
+    $scope.curve.setAttribute('fill', 'rgba(250, 200, 200, 0.2)');
+    $scope.curve.setAttribute('stroke', 'rgba(100, 140, 255, 0)')
+    $scope.prev_curve = $scope.curve;
+    $scope.curve = undefined;
+  }
+
+  onmousemove = function($event){
+    console.log($event, $scope.curve)
+    if($scope.curve)
+      $scope.curve.setAttribute('d', $scope.curve.getAttribute('d') + 'L'+($event.pageX - document.getElementById('paper').offsetLeft)+' '+($event.pageY- document.getElementById('paper').offsetTop));
+  }
+  
+  window.onresize = function() {
+    $scope.$apply();
+  };
+  */
 
 });
 
