@@ -23,7 +23,6 @@ app.controller('paperCtrl', function($scope, $firebase) {
     $scope.tempKey = null;
     $scope.comments.$add($scope.tempComment).then(function(ref) {
         $scope.tempKey = ref.name();
-        console.log($scope.tempKey);
     });
   };
 
@@ -41,7 +40,6 @@ app.controller('paperCtrl', function($scope, $firebase) {
           var key = $scope.tempKey;
           var newData = {};
           newData[key] = $scope.tempComment;
-          console.log(newData);
           $scope.comments.$update(newData);
       }
     }
@@ -57,7 +55,6 @@ app.controller('paperCtrl', function($scope, $firebase) {
           var key = $scope.tempKey;
           var newData = {};
           newData[key] = $scope.tempComment;
-          console.log(newData);
           $scope.comments.$update(newData);
       }
     }
@@ -88,7 +85,6 @@ app.controller('paperCtrl', function($scope, $firebase) {
         var key = $scope.tempKey;
         var newData = {};
         newData[key] = $scope.tempComment;
-        console.log(newData);
         $scope.comments.$update(newData);
     }
     
@@ -105,19 +101,24 @@ app.controller('paperCtrl', function($scope, $firebase) {
   };
 
   $scope.removeComment = function() {
-    for(cmt in $scope.comments) {
-        console.log($scope.comments[cmt]);
-        if ($scope.comments[cmt] === null) continue;
-
-      if($scope.comments[cmt] === $scope.mousedCmt) {
-          console.log(cmt);
-          // console.log("name = " + $scope.comments[cmt].name());
-          $scope.comments.$remove(cmt);
-          // $scope.comments.splice(cmt, 1);
-      }
+    if (key !== null) {
+        var key = $scope.tempKey;
+        $scope.comments.$remove(key);
     }
     $scope.makingComment = false;
     $scope.showMousedCmt = false;
+  };
+
+  $scope.clearAll = function() {
+    for (cmt in $scope.comments) {
+        try {
+            if (typeof cmt === 'string') {
+      $scope.comments.$remove(cmt);
+            }
+        } catch (err) {
+            // ignore
+        }
+    }
   };
 
   $scope.cmtStyle = function(x, y) {
