@@ -1,44 +1,54 @@
 <div data-ng-controller="paperCtrl">
   <div class="background">
-    <div class="logo">
-      hyperink
-    </div>
+    <img src="background-image.jpg" class="bckimg"></img>
+    <img src="background-image.jpg" class="bckimg"></img>
+    <img src="background-image.jpg" class="bckimg"></img>
+    <img src="background-image.jpg" class="bckimg"></img>
+    <img src="background-image.jpg" class="bckimg"></img>
+    <img src="background-image.jpg" class="bckimg"></img>
+    <img src="background-image.jpg" class="bckimg"></img>
+    <img src="background-image.jpg" class="bckimg"></img>
+    <img src="hyperink.png" style="width: 300px;
+                                   position: absolute;
+                                   z-index: 20;
+                                   left: 0px;
+                                   top: 0px;
+                                   margin-top: 20px;
+                                   margin-left: 20px;"></img>
   </div>
   <div>
-    <div id="paper" class="paper" data-ng-click="createComment($event)"
+    <div id="paper" class="paper" 
+         data-ng-mousedown="mouseDown($event)"
+         data-ng-mousemove="mouseMove($event)"
+         data-ng-mouseup="mouseUp($event)"
          title="Click to add annotation.">
-      <svg id="hyperspace"></svg>
-    </div>
-    <div data-ng-repeat="cmt in comments">
-      <span data-ng-style="cmtStyle(cmt.x, cmt.y)" 
-            style="position: absolute;
-                   color: purple;"
-            data-ng-mouseover="showComment(cmt)"
-            class="glyphicon glyphicon-pushpin ppn">
-      </span>
-      <div class="comment">
-      </div>
+      <svg id="hyperspace">
+        <path data-ng-repeat="cmt in comments"
+              style="background-color: purple;
+                     opacity: .3;"
+              d="{{cmt.d}}" data-ng-class="{done: cmt.done}"
+              data-ng-mouseover="showComment(cmt)"></path>
+      </svg>
     </div>
     <div data-ng-style="cmtStyle(tempComment.x, tempComment.y)"
          class="cmtDialog"
          data-ng-show="makingComment">
-      <div class="cmtDialogTitle">Write Comment</div>
+      <div class="cmtDialogTitle">Annotation</div>
       <div class="hLine"></div>
       <textarea class="cmtDialogBody" 
                 data-ng-model="commentText"
-                placeholder="Write your comment here..."></textarea>
+                placeholder="Write your annotation here..."></textarea>
       <div class="hLine"></div>
       <button class="cmtDialogButton btn"
               style="margin-bottom: 4px; margin-right: 4px;"
               data-ng-hide="hideCommentButton()"
-              data-ng-click="submitComment();">Comment</button>
+              data-ng-click="submitComment();">Submit</button>
       <button class="cmtDialogButton btn"
               style="margin-bottom: 4px; margin-right: 4px;"
               data-ng-click="closeCommentDialog()">Cancel</button>
     </div>
     <div class="cmt"
          data-ng-style="cmtStyle(mousedCmt.x, mousedCmt.y)"
-         data-ng-mouseleave="hideComment()"
          data-ng-show="showMousedCmt">
       <div>
         <button class="close" data-ng-click="removeComment()">
