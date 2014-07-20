@@ -108,7 +108,8 @@ app.controller('paperCtrl', function($scope, $firebase) {
     for(cmt in $scope.comments) {
         console.log($scope.comments[cmt]);
         if ($scope.comments[cmt] === null) continue;
-      if($scope.comments[cmt].text === $scope.mousedCmt.text) {
+
+      if($scope.comments[cmt] === $scope.mousedCmt) {
           console.log(cmt);
           // console.log("name = " + $scope.comments[cmt].name());
           $scope.comments.$remove(cmt);
