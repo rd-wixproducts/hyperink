@@ -62,7 +62,7 @@ app.post('/end', function (req, res) {
 	var busboy = new Busboy({ headers: req.headers });
     busboy.on('file', function(fieldname, file, filename, encoding, mimetype) {
     	broadcast(file, { wumbo: true })
-		console.log('YOLO DAWG')
+		// console.log('YOLO DAWG')
     });
     busboy.on('finish', function() {
       res.writeHead(200, { 'Connection': 'close' });

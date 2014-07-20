@@ -8,18 +8,18 @@
 	}
 	#swag {
 		/*-webkit-transform: rotate(-90deg);*/
-		background: whiteSmoke;
+		background: white;
 		box-shadow: 0 0 20px gray;
 	}
 	#doge {
-		background: whiteSmoke;
+		background: white;
 		box-shadow: 0 0 20px gray;
 		float: right;
 	}
 	#puppies {
 		position: absolute;
 		z-index: 80323;
-		top: 50px;
+		bottom: 50px;
 		left: 50px;
 		color: maroon;
 	}
@@ -31,180 +31,16 @@
 <div id="walps"></div>
 </div>
 <div id="puppies">0FPS</div>
+
+<input type="range" id="zombocom" style="width: 100%; margin-bottom: 20px" value="1" max="1" min="0" step="0.001" oninput="fucking_change_dat_shit(this.value)">
+
 <canvas id="swag" width="773" height="1000"></canvas>
 <canvas id="doge" width="773" height="1000"></canvas>
 
 <script src="jsfeat.js"></script>
+<script src="democode.js"></script>
+
 <script>
-var canvas = document.getElementById('swag');
-var ctx = canvas.getContext('2d')
-// ctx.globalAlpha = 0.2
-var client = BinaryClient('ws://' + location.host);
-var lastrender = 0;
-client.on('open', function(stream){
-	// var stream = client.createStream({file: 'hello.txt'});
-	// stream.write('Hello');
-	// stream.write('World!');
-	// stream.end();
-
-	console.log('wumbo')
-
-	client.on('stream', function(stream, meta){
-		var fuppies = (1000/(Date.now() - lastrender))
-		document.getElementById('puppies').innerHTML = fuppies.toFixed(1) + ' FPS'
-		lastrender = Date.now();
-
-		var parts = [];
-		stream.on('data', function(data){ parts.push(data); });
-		stream.on('end', function(){
-			var url = (window.URL || window.webkitURL).createObjectURL(new Blob(parts));
-			var img = new Image();
-			img.src = url;
-			img.onload = function(){
-				ctx.save()
-				ctx.rotate(-Math.PI / 2)
-				ctx.drawImage(img, -1000, 0)
-				ctx.restore()
-
-				var dat = ctx.getImageData(0, 0, canvas.width, canvas.height);
-				do_magic(dat)
-			}
-			
-		});
-		// var file = fs.createWriteStream(meta.file);
-		// stream.pipe(file);
-		console.log(stream, meta)
-	}); 
-});
-
-
-function do_magic(src){
-
-	var params = {
-		// the kernel size for the gaussian blur before canny
-		kernel_size: 0,
-		// low and high thresh are parameters for the canny edge detector
-		low_thresh: 124,
-		high_thresh: 204,
-		max_stroke: 35
-	}
-
-
-	var width = src.width, height = src.height;
-	
-	var img_u8 = new jsfeat.matrix_t(width, height, jsfeat.U8C1_t)
-	var img_dxdy = new jsfeat.matrix_t(width, height, jsfeat.S32C2_t);
-
-	console.time("image processing")
-
-	jsfeat.imgproc.grayscale(src.data, img_u8.data)
-	jsfeat.imgproc.sobel_derivatives(img_u8, img_dxdy)
-	// jsfeat.imgproc.gaussian_blur(img_u8, img_u8, params.kernel_size, 0)
-	jsfeat.imgproc.canny(img_u8, img_u8, params.low_thresh, params.high_thresh)
-	
-	params.direction = -1;
-
-	var swt = raw_swt(img_u8, img_dxdy, params);
-	console.timeEnd("image processing")
-
-	visualize_matrix(swt)
-
-}
-
-
-// canny & sobel dx/dy
-function raw_swt(img_canny, img_dxdy, params){
-	var max_stroke = params.max_stroke, // maximum stroke width
-		direction = params.direction,
-		width = img_canny.cols,
-		height = img_canny.rows;
-
-	// nonzero Math.min function, if a is zero, returns b, otherwise minimizes
-	function nzmin(a, b){
-		if(a === 0) return b;
-		if(a < b) return a;
-		return b;
-	}
-	
-	var strokes = [];
-	var swt = new jsfeat.matrix_t(width, height, jsfeat.U8C1_t)
-	
-	console.time("first pass")
-	// first pass of stroke width transform 
-	for(var i = 0; i < width * height; i++){
-		if(img_canny.data[i] != 0xff) continue; // only apply on edge pixels
-
-		var itheta = Math.atan2(img_dxdy.data[(i << 1) + 1], img_dxdy.data[i << 1]); // calculate the image gradient at this point by sobel
-		var ray = [i];
-		var step = 1;
-		
-		var ix = i % width, iy = Math.floor(i / width);
-		while(step < max_stroke){
-			// extrapolate the ray outwards depending on search direction
-			// libccv is particularly clever in that it uses 
-			// bresenham's line drawing algorithm to pick out
-			// the points along the line and also checks 
-			// neighboring pixels for corners
-
-			var jx = Math.round(ix + Math.cos(itheta) * direction * step);
-			var jy = Math.round(iy + Math.sin(itheta) * direction * step);
-			step++;
-			if(jx < 0 || jy < 0 || jx > width || jy > height) break;
-			var j = jy * width + jx;
-			ray.push(j)
-			if(img_canny.data[j] != 0xff) continue;
-			// calculate theta for this ray since we've reached the other side
-			var jtheta = Math.atan2(img_dxdy.data[(j << 1) + 1], img_dxdy.data[j << 1]); 
-			
-			if(Math.abs(Math.abs(itheta - jtheta) - Math.PI) < Math.PI / 2){ // check if theta reflects the starting angle approximately
-				strokes.push(i)
-				var sw = Math.sqrt((jx - ix) * (jx - ix) + (jy - iy) * (jy - iy)) // derive the stroke width
-				for(var k = 0; k < ray.length; k++){ // iterate rays and set points along ray to minimum stroke width
-					swt.data[ray[k]] = nzmin(swt.data[ray[k]], sw) // use nzmin because it's initially all 0's
-				}
-			}
-			break;
-		}
-	}
-	console.timeEnd("first pass")
-	console.time("refinement pass")
-
-	// second pass, refines swt values as median
-	for(var k = 0; k < strokes.length; k++){
-		var i = strokes[k];
-		var itheta = Math.atan2(img_dxdy.data[(i << 1) + 1], img_dxdy.data[i << 1]);
-		var ray = [];
-		var widths = []
-		var step = 1;
-
-		var ix = i % width, iy = Math.floor(i / width);
-		while(step < max_stroke){
-			var jx = Math.round(ix + Math.cos(itheta) * direction * step);
-			var jy = Math.round(iy + Math.sin(itheta) * direction * step);
-			step++;
-			var j = jy * width + jx;
-			// record position of the ray and the stroke width there
-			widths.push(swt.data[j])
-			ray.push(j)			
-			// stop when the ray is terminated
-			if(img_canny.data[j] == 0xff) break;
-		}
-		var median = widths.sort(function(a, b){return a - b})[Math.floor(widths.length / 2)];
-		// set the high values to the median so that corners are nice
-		for(var j = 0; j < ray.length; j++){
-			swt.data[ray[j]] = nzmin(swt.data[ray[j]], median)
-		}
-		// swt.data[ray[0]] = 0
-		// swt.data[ray[ray.length - 1]] = 0
-	}
-
-	console.timeEnd("refinement pass")
-	
-	return swt
-}
-
-
-
 
 function visualize_matrix(mat, letters){
 	var c = document.getElementById('doge')
@@ -213,7 +49,6 @@ function visualize_matrix(mat, letters){
 	var cx = c.getContext('2d')
 	var out = cx.createImageData(mat.cols, mat.rows);
 	for(var i = 0; i < mat.rows * mat.cols; i++){
-
 		out.data[i * 4 + 3] = 255
 		if(mat.data[i] == 1){
 			out.data[i * 4] = 255
@@ -225,26 +60,7 @@ function visualize_matrix(mat, letters){
 	}
 	cx.putImageData(out, 0, 0)
 	
-
 	return cx
 }
 
-client.on('close', function(){
-	console.log('blah closed')
-	document.getElementById('disco').style.display = '';
-	// setTimeout(function(){
-	// 	location.reload(true)
-	// }, 5000)
-	setInterval(function(){
-		var xhr = new XMLHttpRequest();
-		xhr.open('GET', location.href, true)
-		xhr.onload = function(){
-			location.reload(true)
-		}
-		xhr.onerror = function(){
-			document.getElementById('walps').innerHTML += 'MOAR WALP '
-		}
-		xhr.send(null)
-	}, 3000)
-})
 </script>
