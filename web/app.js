@@ -1,9 +1,8 @@
-var app = angular.module('hyperink', ['firebase']);
+var app = angular.module('hyperink', []);
+var ref = new Firebase('https://popping-fire-1233.firebaseIO.com');
 
-app.controller('paperCtrl', function($scope, $firebase) {
-  var ref = new Firebase('https://popping-fire-1233.firebaseIO.com');
-  $scope.comments = $firebase(ref);
-
+app.controller('paperCtrl', function($scope) {
+  $scope.comments = []
   $scope.makingComment = false;
   $scope.tempComment = null;
   $scope.mousedCmt = null;
@@ -19,7 +18,7 @@ app.controller('paperCtrl', function($scope, $firebase) {
       minX: x, maxX: x,
       minY: y, maxY: y
     };
-    $scope.comments.$add($scope.tempComment);
+    $scope.comments.push($scope.tempComment);
   };
 
   $scope.mouseMove = function($event) {
@@ -69,6 +68,7 @@ app.controller('paperCtrl', function($scope, $firebase) {
     $scope.tempComment = null;
     $scope.commentText = '';
     $scope.makingComment = false;
+    ref.push($scope.tempComment);
 
   };
 
