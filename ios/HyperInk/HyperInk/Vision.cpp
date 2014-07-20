@@ -45,9 +45,9 @@ namespace Vision
     bool processImage(cv::Mat &image, cv::Mat &transImage)
     {
         vector<Point> rect = findRect(image);
-        drawRect(image, rect);
         if (!rect.empty()) {
             transform(image, rect, transImage);
+            drawRect(image, rect);
             return true;
         }
         return false;
