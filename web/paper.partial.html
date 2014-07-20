@@ -58,6 +58,11 @@
          data-ng-mouseleave="hideComment()"
          data-ng-show="showMousedCmt">
       <div>
+        <button class="close" data-ng-click="removeComment()">
+          <span aria-hidden-"true">x</span>
+        </button>
+      </div>
+      <div>
         {{mousedCmt.text}}
       </div>
     </div>

@@ -49,6 +49,16 @@ app.controller('paperCtrl', function($scope) {
     $scope.makingComment = false;
   };
 
+  $scope.removeComment = function() {
+    for(cmt in $scope.comments) {
+      if($scope.comments[cmt].text === $scope.mousedCmt.text) {
+        $scope.comments.splice(cmt, 1);
+      }
+    }
+    $scope.makingComment = false;
+    $scope.showMousedCmt = false;
+  };
+
   $scope.cmtStyle = function(x, y) {
     var nX = x + paper.offsetLeft;
     return {'left': nX + 'px', 'top': y + 'px'};
