@@ -58,6 +58,17 @@ using namespace cv;
     {
         NSLog(@"Starting video camera");
         [self.videoCamera start];
+        NSArray *devices = [AVCaptureDevice devices];
+        NSError *error;
+        for (AVCaptureDevice *device in devices) {
+            if ([device position] == AVCaptureDevicePositionBack) {
+                [device lockForConfiguration:&error];
+                if ([device isFocusModeSupported:AVCaptureFocusModeAutoFocus]) {
+                    device.focusMode = AVCaptureFocusModeAutoFocus;
+                }
+                [device unlockForConfiguration];
+            }
+        }
     }
 }
 
