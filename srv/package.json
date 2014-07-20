@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "express": "4.6.x",
-    "binaryjs": "0.2.x"
+    "binaryjs": "0.2.x",
+    "busboy": "0.2.x"
   }
 }
