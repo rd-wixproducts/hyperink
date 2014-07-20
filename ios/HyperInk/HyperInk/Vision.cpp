@@ -11,6 +11,8 @@
 #include <opencv2/imgproc/imgproc.hpp>
 
 #include <vector>
+#include <algorithm>
+#include <utility>
 
 namespace Vision
 {
@@ -25,6 +27,8 @@ namespace Vision
 #define BILATERAL_SIGMASPACE (50)
 #define POLY_SIZE_LOW (0.1)
 #define POLY_SIZE_HIGH (0.95)
+#define ASPECT_RATIO (8.5 / 11.0)
+#define TARGET_WIDTH (1000)
 
     static Scalar color_red = Scalar(0, 0, 255, 255);
     static Scalar color_blue = Scalar(255, 0, 0, 255);
@@ -36,10 +40,17 @@ namespace Vision
     
     bool isRightRect(const cv::Mat &image, const std::vector<Point> &rect, double area);
     
-    void processImage(cv::Mat &image)
+    void transform(const cv::Mat &image, const std::vector<Point> &rect, cv::Mat &out);
+    
+    bool processImage(cv::Mat &image, cv::Mat &transImage)
     {
         vector<Point> rect = findRect(image);
         drawRect(image, rect);
+        if (!rect.empty()) {
+            transform(image, rect, transImage);
+            return true;
+        }
+        return false;
     }
     
     void drawRect(cv::Mat &image, std::vector<Point> rect)
@@ -71,7 +82,6 @@ namespace Vision
         static Mat hull;
         vector<Point> rect;
         for (const auto &contour : contours) {
-            // vector<Point> hull;
             convexHull(contour, hull);
             vector<Point> poly;
             double len = arcLength(hull, true);
@@ -93,6 +103,53 @@ namespace Vision
     {
         const double image_size = image.rows * image.cols;
         return POLY_SIZE_LOW * image_size <= area && area <= image_size * POLY_SIZE_HIGH;
+    }
+    
+    using pii = pair<int, int>;
+    
+    bool byX(pii a, pii b)
+    {
+        return a.first < b.first;
+    }
+    
+    bool byY(pii a, pii b)
+    {
+        return a.second < b.second;
+    }
+
+    void transform(const cv::Mat &image, const std::vector<Point> &rect, cv::Mat &out)
+    {
+        assert(rect.size() == 4);
+        
+        vector<pii> points;
+        for (const auto &point : rect) {
+            points.push_back(make_pair(point.x, point.y));
+        }
+        
+        sort(points.begin(), points.end(), byX);
+        sort(points.begin(), points.begin() + 2, byY);
+        sort(points.begin() + 2, points.end(), byY);
+
+        // points is now in order:
+        // topLeft, bottomLeft, topRight, bottomRight
+        
+        vector<Point2f> from;
+        for (const auto &point : points) {
+            from.emplace_back(point.first, point.second);
+        }
+
+        int width = TARGET_WIDTH;
+        int height = width * ASPECT_RATIO;
+        
+        vector<Point2f> to;
+        to.emplace_back(0, 0);
+        to.emplace_back(0, height);
+        to.emplace_back(width, 0);
+        to.emplace_back(width, height);
+
+        Mat transMatrix = getPerspectiveTransform(from, to);
+
+        warpPerspective(image, out, transMatrix, Size(width, height));
     }
     
 }
