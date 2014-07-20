@@ -103,7 +103,9 @@ using namespace cv;
     vector<uchar> buf;
     cv::imencode(".jpg", image, buf);
     NSData *imageData = [NSData dataWithBytes:&buf.front() length:buf.size()];
-    [self.webSocket send:imageData];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        [self.webSocket send:imageData];
+    });
 }
 
 - (NSUInteger)supportedInterfaceOrientations

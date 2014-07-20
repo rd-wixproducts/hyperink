@@ -57,7 +57,7 @@ namespace Vision
         static Mat dest(image.rows, image.cols, CV_8UC1);
         vector<Point> rect = findRect(image, dest);
         if (!rect.empty()) {
-            transform(dest, rect, transImage);
+            transform(image, rect, transImage);
             // cvtColor(transImage, transImage, CV_BGR2RGB);
             drawRect(image, rect);
             return true;
@@ -83,8 +83,10 @@ namespace Vision
         // static Mat dest(image.rows, image.cols, CV_8UC1);
         static Mat grey(image.rows, image.cols, CV_8UC1);
         cvtColor(image, grey, CV_BGR2GRAY);
-        bilateralFilter(grey, dest, BILATERAL_DIAM, BILATERAL_SIGMACOLOR, BILATERAL_SIGMASPACE);
-        
+        static Mat smaller(0, 0, CV_8UC1);
+        resize(grey, smaller, Size(0, 0), 0.5, 0.5);
+        bilateralFilter(smaller, dest, BILATERAL_DIAM, BILATERAL_SIGMACOLOR, BILATERAL_SIGMASPACE);
+
         static Mat canny_output;
         Canny(dest, canny_output, CANNY_THRESH, CANNY_THRESH * 2);
         
@@ -105,6 +107,12 @@ namespace Vision
                         rect = poly;
                     }
                 }
+            }
+        }
+        if (!rect.empty()) {
+            for (int i = 0; i < rect.size(); i++) {
+                rect[i].x *= image.cols / smaller.cols;
+                rect[i].y *= image.rows / smaller.rows;
             }
         }
         return updateRect(rect);

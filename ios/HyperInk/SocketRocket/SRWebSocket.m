@@ -696,10 +696,8 @@ static __strong NSData *CRLFCRLF;
 - (void)send:(id)data;
 {
     if (self.sending) {
-        NSLog(@"Aborting sending...");
         return;
     }
-    NSLog(@"Sending");
     self.sending = YES;
     NSAssert(self.readyState != SR_CONNECTING, @"Invalid State: Cannot call send: until connection is open");
     // TODO: maybe not copy this for performance
@@ -714,7 +712,6 @@ static __strong NSData *CRLFCRLF;
         } else {
             assert(NO);
         }
-        NSLog(@"Done sending");
         self.sending = NO;
     });
 }
