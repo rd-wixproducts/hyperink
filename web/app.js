@@ -6,6 +6,8 @@ app.controller('paperCtrl', function($scope) {
   $scope.tempComment = {};
   $scope.mousedCmt = {};
   $scope.showMousedCmt = false;
+  $scope.curve = undefined;
+
 
   $scope.createComment = function($event) {
     $scope.makingComment = false;
@@ -51,10 +53,31 @@ app.controller('paperCtrl', function($scope) {
     var nX = x + paper.offsetLeft;
     return {'left': nX + 'px', 'top': y + 'px'};
   };
+
+  onmousedown = function($event){
+    $scope.curve = document.createElementNS('http://www.w3.org/2000/svg','path');
+    $scope.curve.setAttribute('d', 'M'+ ($event.pageX - document.getElementById('paper').offsetLeft) +' '+($event.pageY- document.getElementById('paper').offsetTop))
+    $scope.curve.setAttribute('stroke', 'rgba(100, 140, 255, 0.8)')
+    $scope.curve.setAttribute('fill', 'rgba(250, 200, 200, 0)');
+    document.getElementById('hyperspace').appendChild($scope.curve)
+  }
+
+  onmouseup = function(){
+    $scope.curve.setAttribute('fill', 'rgba(250, 200, 200, 0.2)');
+    $scope.curve.setAttribute('stroke', 'rgba(100, 140, 255, 0)')
+    $scope.curve = undefined;
+  }
+
+  onmousemove = function($event){
+    console.log($event, $scope.curve)
+    if($scope.curve)
+      $scope.curve.setAttribute('d', $scope.curve.getAttribute('d') + 'L'+($event.pageX - document.getElementById('paper').offsetLeft)+' '+($event.pageY- document.getElementById('paper').offsetTop));
+  }
   
   window.onresize = function() {
     $scope.$apply();
   };
+
 });
 
 app.directive('paper', function() {
@@ -63,3 +86,5 @@ app.directive('paper', function() {
     templateUrl: 'paper.partial.html'
   };
 });
+
+
