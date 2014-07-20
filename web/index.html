@@ -17,17 +17,23 @@
     <div id="walps"></div>
     </div>
     
-    <button id="magictog"><img src="glyphicons_009_magic@2x.png" ></button>
+    <label id="togbot" for="magictog"><input type="checkbox" id="magictog"><img src="glyphicons_009_magic@2x.png"></label>
 
     <paper></paper>
 
     <style>
-    #magictog {
-      float: right;
-      margin: 20px;
+    #togbot {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      z-index: 2348;
+      opacity: 0.5;
     }
-    #magictog img {
-       
+    #togbot:hover {
+      opacity: 1;
+    }
+    #togbot img {
+
       width: 24px; 
     }
     #timeline {
