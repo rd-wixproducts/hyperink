@@ -15,6 +15,11 @@ image are drawn and which parts are occluding objects/hands. We also employ
 Firebase for storing and real-time updating of shared data such as document
 annotations.
 
+Also, please take a look at our Medium post about our experience building this
+project at the Greylock Hackfest! The link is posted below:
+
+https://medium.com/@nikhilbuduma/greylock-hackfest-medium-e9b6cc2e82a4
+
 ---
 
 Web stuff belongs in `web/`.
