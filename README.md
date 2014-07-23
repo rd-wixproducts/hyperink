@@ -15,6 +15,9 @@ image are drawn and which parts are occluding objects/hands. We also employ
 Firebase for storing and real-time updating of shared data such as document
 annotations.
 
+Here's a [demo video][demo]. There's no audio, but you can figure out what's
+going on.
+
 Here are a couple pictures of our iOS app in its early stages, automatically
 identifying a piece of paper and drawing a box around it and adding green dots
 to indicate the corners, all done in real-time:
@@ -46,3 +49,4 @@ VERY HACK
 
 [iphone]: photos/IMG_2736.PNG
 [anish]: photos/IMG_2738.JPG
+[demo]: https://www.youtube.com/watch?v=Q5a451II2R4
