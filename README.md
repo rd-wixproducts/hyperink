@@ -67,3 +67,4 @@ Released under the MIT License. See [LICENSE.md][license] for details.
 [iphone]: photos/IMG_2736.PNG
 [anish]: photos/IMG_2738.JPG
 [demo]: https://www.youtube.com/watch?v=Q5a451II2R4
+[license]: LICENSE.md
